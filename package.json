@@ -4,6 +4,7 @@
   "description": "test test",
   "main": "index.html",
   "scripts": {
+    "dev": "beefy public/js/main.js --live",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "http-server"
   },
@@ -18,6 +19,13 @@
   },
   "homepage": "https://github.com/CorentinGrard/projet-IA#readme",
   "dependencies": {
-    "http-server": "^0.11.1"
+    "browserify": "^16.2.3",
+    "http-server": "^0.11.1",
+    "pixi.js": "^4.8.7",
+    "pixi.js-keyboard": "^1.0.9"
+  },
+  "devDependencies": {
+    "beefy": "^2.1.8",
+    "watchify": "^3.11.1"
   }
 }
