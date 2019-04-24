@@ -112,17 +112,42 @@ function setup() {
 	winMessage.position.set(app.view.width/2,app.view.height/2);
 	winScene.addChild(winMessage);
 
-	
-	// Création de plusieurs ennemis
-	speed = 2;
+	//Make the enemies
+	let numberOfEnemies = 6,
+	spacing = 48,
+	xOffset = 150,
+	speed = 2,
+	direction = 1;
+	//An array to store all the enemie monsters
 	enemies = [];
-	enemieCreation(125,25,1,true);
-	enemieCreation(480,75,-1,true);
-	enemieCreation(225,125,1,false);
-	enemieCreation(275,375,-1,false);
-	enemieCreation(25,425,1,true);
-	enemieCreation(375,475,-1,true);
 
+	for (let i = 0; i < numberOfEnemies; i++) {
+		//Make a enemie
+		let enemie = new Graphics();
+		enemie.beginFill(0x9966FF);
+		enemie.drawCircle(0, 0, 6);
+		enemie.endFill();
+		app.stage.addChild(enemie);
+		let x = spacing * i + xOffset;
+
+		//Give the enemie a random y position
+		let y = randomInt(0, app.stage.height - enemie.height);
+
+		//Set the enemie's position
+		enemie.x = x;
+		enemie.y = y;
+
+		enemie.vy = speed * direction;
+
+		//Reverse the direction for the next enemie
+		direction *= -1;
+
+		//Push the enemie into the `enemies` array
+		enemies.push(enemie);
+
+		//Add the enemie to the `gameScene`
+		gameScene.addChild(enemie);
+	}
 	//Set the game state
 	state = play;
 
@@ -185,19 +210,15 @@ function play(delta) {
 	enemies.forEach(function(enemie) {
 
 		//Move the enemie
-		enemie.x += enemie.vx;
 		enemie.y += enemie.vy;
-		
+	  
+		//Check the enemie's screen boundaries
+		let enemieHitsWall = contain(enemie, {x: 28, y: 10, width: 488, height: 480});
 	  
 		//If the enemie hits the top or bottom of the stage, reverse
 		//its direction
-		if (!gameBoardPhysic.contains(enemie.x + 10,enemie.y + 10) ) {
-			enemie.vx *= -1;
-			enemie.vy *= -1;
-		}
-		if (!gameBoardPhysic.contains(enemie.x - 10,enemie.y - 10) ) {
-			enemie.vx *= -1;
-			enemie.vy *= -1;
+		if (enemieHitsWall === "top" || enemieHitsWall === "bottom") {
+		  	enemie.vy *= -1;
 		}
 
 		//Test for a collision. If any of the enemies are touching
@@ -207,15 +228,14 @@ function play(delta) {
 			player.x = findXCenterOfSpawnningArea();
 			player.y = findYCenterOfSpawnningArea();
 		}
-	});
+		});
 		
-	if(hitCircleRectangle(endArea, player)) {
-		gameScene.visible = false;
-		winScene.visible = true;
-	}
+		if(hitCircleRectangle(endArea, player)) {
+			gameScene.visible = false;
+			winScene.visible = true;
+		}
+
 }
-
-
 function end() {
 
 }
@@ -277,25 +297,4 @@ function findXCenterOfSpawnningArea() {
 
 function findYCenterOfSpawnningArea() {
 	return Math.round(((startArea.y + (startArea.y + startArea.height)) / 2) - (player.height / 2));
-}
-
-function enemieCreation(x,y,direction,hozizontalMovement) {
-	let enemie = new Graphics();
-	enemie.beginFill(0x9966FF);
-	enemie.drawCircle(0, 0, 6);
-	enemie.endFill();
-	
-	enemie.x = x;
-	enemie.y = y;
-
-	if (hozizontalMovement) {
-		enemie.vx = speed * direction;
-		enemie.vy = 0;	
-	}else{
-		enemie.vx = 0;	
-		enemie.vy = speed * direction;
-	}
-	app.stage.addChild(enemie);
-	gameScene.addChild(enemie);
-	enemies.push(enemie);
 }
