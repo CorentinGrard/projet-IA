@@ -195,7 +195,15 @@ function play(delta) {
 			enemie.vx *= -1;
 			enemie.vy *= -1;
 		}
-		if (!gameBoardPhysic.contains(enemie.x - 10,enemie.y - 10) ) {
+		if (!gameBoardPhysic.contains(enemie.x - 10,enemie.y - 10)) {
+			enemie.vx *= -1;
+			enemie.vy *= -1;
+		}
+		if (hitCircleRectangle(enemie, startArea)) {
+			enemie.vx *= -1;
+			enemie.vy *= -1;	
+		}	
+		if (hitCircleRectangle(enemie, endArea)) {
 			enemie.vx *= -1;
 			enemie.vy *= -1;
 		}
