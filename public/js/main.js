@@ -284,7 +284,7 @@ function play(delta) {
 	});
 	
 	/*###### Vérification de collision entre le joueur et la zone d'arrivée ######*/
-	if(hitCircleRectangle(endArea, player)) {
+	if(intersects.boxBox(player.x,player.y,player.width,player.height,endArea.x+36,endArea.y+36,endArea.width-72,endArea.height-72)) {
 		gameScene.visible = false;
 		winScene.visible = true;
 	}
