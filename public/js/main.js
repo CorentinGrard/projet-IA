@@ -200,13 +200,14 @@ function gameLoop(delta){
 
 /*###### Fonction appellée à chaque tic d'horloge ######*/
 function play(delta) {
+	console.log("x : "+player.x + "		y : "+player.y)
 	const speed=5*delta;
 	player.vx=0;
 	player.vy=0;
 
 	/*###### Gestion du mouvement du personnage dans le plateau de jeu ######*/
 	if (Keyboard.isKeyDown('ArrowLeft', 'KeyQ')){
-		if(gameBoardPhysic.contains(player.x-5,player.y)) {
+		if(gameBoardPhysic.contains(player.x - 5,(player.y+player.height)) && gameBoardPhysic.contains(player.x -5,player.y)) {
 			if(Keyboard.isKeyDown('ArrowUp', 'KeyZ') || Keyboard.isKeyDown('ArrowDown', 'KeyS')){
 				player.x -= speed/Math.sqrt(2);
 			}else{
@@ -215,7 +216,7 @@ function play(delta) {
 		}
 	}
 	if (Keyboard.isKeyDown('ArrowRight', 'KeyD') ){
-		if (gameBoardPhysic.contains((player.x + player.width),player.y)) {
+		if (gameBoardPhysic.contains((player.x + player.width + 2),(player.y+player.height)) && gameBoardPhysic.contains((player.x + player.width + 2),player.y)) {
 			if(Keyboard.isKeyDown('ArrowUp', 'KeyZ') || Keyboard.isKeyDown('ArrowDown', 'KeyS')){
 				player.x += speed/Math.sqrt(2);
 			}else{
@@ -224,7 +225,7 @@ function play(delta) {
 		}
 	}	
 	if (Keyboard.isKeyDown('ArrowUp', 'KeyZ')){
-		if (gameBoardPhysic.contains(player.x,player.y-5)) {
+		if (gameBoardPhysic.contains(player.x,player.y - 5) && gameBoardPhysic.contains((player.x + player.width),player.y - 5)) {
 			if(Keyboard.isKeyDown('ArrowRight', 'KeyD') || Keyboard.isKeyDown('ArrowLeft', 'KeyQ')){
 				player.y -= speed/Math.sqrt(2);
 			}else{
@@ -233,7 +234,7 @@ function play(delta) {
 		}
 	}	
 	if (Keyboard.isKeyDown('ArrowDown', 'KeyS')){
-		if (gameBoardPhysic.contains(player.x,(player.y+player.height))) {
+		if (gameBoardPhysic.contains(player.x ,(player.y+player.height + 3)) && gameBoardPhysic.contains((player.x + player.width ),(player.y+player.height + 3))) {
 			if(Keyboard.isKeyDown('ArrowRight', 'KeyD') || Keyboard.isKeyDown('ArrowLeft', 'KeyQ')){
 				player.y += speed/Math.sqrt(2);
 			}else{
@@ -276,11 +277,11 @@ function play(delta) {
 		}
 
 		/*###### Vérification de collision entre l'ennemie courant et le joueur ######*/
-		if(hitCircleRectangle(enemie, player)) {
+		//if(hitCircleRectangle(enemie, player)) {
 			/*###### Retour en zone de départ si collision ######*/
-			player.x = findXCenterOfSpawnningArea();
-			player.y = findYCenterOfSpawnningArea();
-		}
+		//	player.x = findXCenterOfSpawnningArea();
+		//	player.y = findYCenterOfSpawnningArea();
+		//}
 	});
 	
 	/*###### Vérification de collision entre le joueur et la zone d'arrivée ######*/
