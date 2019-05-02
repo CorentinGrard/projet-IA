@@ -114,7 +114,7 @@ function setup() {
 	gameBoardPhysic = new Polygon(tabMap);
 
 	gameBoardDraw.beginFill(0x87CEFA);
-	gameBoardDraw.lineStyle(4, 0x000000, 1);
+	gameBoardDraw.lineStyle(0, 0x000000, 1);
 	gameBoardDraw.drawPolygon(gameBoardPhysic);
 	gameBoardDraw.endFill();
 	gameBoardDraw.x = 2;
@@ -163,12 +163,12 @@ function setup() {
 	
 	/*###### Création des ennemies ######*/
 	enemies = [];
-	enemieCreation(125,25,1,2,true);
-	enemieCreation(480,75,-1,2,true);
-	enemieCreation(225,125,1,2,false);
-	enemieCreation(275,375,-1,2,false);
-	enemieCreation(25,425,1,2,true);
-	enemieCreation(375,475,-1,2,true);
+	enemieCreation(125,25,1,2,true,350);
+	enemieCreation(480,75,-1,2,true,350);
+	enemieCreation(225,125,1,2,false,250);
+	enemieCreation(275,375,-1,2,false,250);
+	enemieCreation(25,425,1,2,true,350);
+	enemieCreation(375,475,-1,2,true,350);
 
 	/*###### Mise à jour du statut de la partie ######*/
 	state = play;
@@ -200,23 +200,24 @@ function gameLoop(delta){
 
 /*###### Fonction appellée à chaque tic d'horloge ######*/
 function play(delta) {
-	console.log("x : "+player.x + "		y : "+player.y)
+	//console.log("x : "+player.x + "		y : "+player.y)
 	const speed=5*delta;
 	player.vx=0;
 	player.vy=0;
 
 	/*###### Gestion du mouvement du personnage dans le plateau de jeu ######*/
 	if (Keyboard.isKeyDown('ArrowLeft', 'KeyQ')){
-		if(gameBoardPhysic.contains(player.x - 5,(player.y+player.height)) && gameBoardPhysic.contains(player.x -5,player.y)) {
+		if(gameBoardPhysic.contains(player.x-5,(player.y+player.height)) && gameBoardPhysic.contains(player.x-5,player.y)) {
 			if(Keyboard.isKeyDown('ArrowUp', 'KeyZ') || Keyboard.isKeyDown('ArrowDown', 'KeyS')){
 				player.x -= speed/Math.sqrt(2);
-			}else{
+			}
+			else{
 				player.x -= speed;
 			}
 		}
 	}
 	if (Keyboard.isKeyDown('ArrowRight', 'KeyD') ){
-		if (gameBoardPhysic.contains((player.x + player.width + 2),(player.y+player.height)) && gameBoardPhysic.contains((player.x + player.width + 2),player.y)) {
+		if (gameBoardPhysic.contains((player.x + player.width+5),(player.y+player.height)) && gameBoardPhysic.contains((player.x + player.width+5),player.y)) {
 			if(Keyboard.isKeyDown('ArrowUp', 'KeyZ') || Keyboard.isKeyDown('ArrowDown', 'KeyS')){
 				player.x += speed/Math.sqrt(2);
 			}else{
@@ -225,7 +226,7 @@ function play(delta) {
 		}
 	}	
 	if (Keyboard.isKeyDown('ArrowUp', 'KeyZ')){
-		if (gameBoardPhysic.contains(player.x,player.y - 5) && gameBoardPhysic.contains((player.x + player.width),player.y - 5)) {
+		if (gameBoardPhysic.contains(player.x,player.y-5) && gameBoardPhysic.contains((player.x + player.width),player.y-5)) {
 			if(Keyboard.isKeyDown('ArrowRight', 'KeyD') || Keyboard.isKeyDown('ArrowLeft', 'KeyQ')){
 				player.y -= speed/Math.sqrt(2);
 			}else{
@@ -234,7 +235,7 @@ function play(delta) {
 		}
 	}	
 	if (Keyboard.isKeyDown('ArrowDown', 'KeyS')){
-		if (gameBoardPhysic.contains(player.x ,(player.y+player.height + 3)) && gameBoardPhysic.contains((player.x + player.width ),(player.y+player.height + 3))) {
+		if (gameBoardPhysic.contains(player.x,(player.y+player.height+5)) && gameBoardPhysic.contains((player.x + player.width ),(player.y+player.height+5))) {
 			if(Keyboard.isKeyDown('ArrowRight', 'KeyD') || Keyboard.isKeyDown('ArrowLeft', 'KeyQ')){
 				player.y += speed/Math.sqrt(2);
 			}else{
@@ -246,35 +247,58 @@ function play(delta) {
 	/*###### Boucle sur tous les ennemis pour gérer leurs mouvements et leurs collisions ######*/
 	enemies.forEach(function(enemie) {
 
+		
 		/*###### Déplacement des ennemis à chaque tic d'horloge ######*/
+		
+		enemie.distance -= Math.abs(enemie.vx);
+		enemie.distance -= Math.abs(enemie.vy);
+		
+		if (enemie.distance <= 0) {
+			console.log("ici");
+			enemie.vx *= -1;
+			enemie.vy *= -1;
+			enemie.distance = enemie.distanceStorage;
+		}
 		enemie.x += enemie.vx;
 		enemie.y += enemie.vy;
 		
 	  
 		/*###### Conditions de changement de sens de déplacement des ennemis ######*/
 
+
+
+
+
 		/*###### Verification de présence dans le plateau de jeu avec une marge de 10px pour le haut ######*/
-		if (!gameBoardPhysic.contains(enemie.x + 10,enemie.y + 10) ) {
-			enemie.vx *= -1;
-			enemie.vy *= -1;
-		}
-		/*###### Verification de présence dans le plateau de jeu avec une marge de 10px pour le bas ######*/
-		if (!gameBoardPhysic.contains(enemie.x - 10,enemie.y - 10)) {
-			enemie.vx *= -1;
-			enemie.vy *= -1;
-		}
+		// if (enemie.hozizontalMovement) {
+		// 	if (enemie.x == enemie.limitOne || enemie.x == enemie.limitTwo) {
+		// 		enemie.vx *= -1;
+		// 		enemie.vy *= -1;
+		// 	}
+		// }
+		// else {
+		// 	if(enemie.y == enemie.limitOne || enemie.y == enemie.limitTwo) {
+		// 		enemie.vx *= -1;
+		// 		enemie.vy *= -1;
+		// 	}
+		// }
+		// /*###### Verification de présence dans le plateau de jeu avec une marge de 10px pour le bas ######*/
+		// if (!gameBoardPhysic.contains(enemie.x - 10,enemie.y - 10)) {
+		// 	enemie.vx *= -1;
+		// 	enemie.vy *= -1;
+		// }
 
-		/*###### Exclusion des ennemis de la zone de départ ######*/
-		if (hitCircleRectangle(enemie, startArea)) {
-			enemie.vx *= -1;
-			enemie.vy *= -1;	
-		}	
+		// /*###### Exclusion des ennemis de la zone de départ ######*/
+		// if (hitCircleRectangle(enemie, startArea)) {
+		// 	enemie.vx *= -1;
+		// 	enemie.vy *= -1;	
+		// }	
 
-		/*###### Exclusion des ennemis de la zone d'arrivée ######*/
-		if (hitCircleRectangle(enemie, endArea)) {
-			enemie.vx *= -1;
-			enemie.vy *= -1;
-		}
+		// /*###### Exclusion des ennemis de la zone d'arrivée ######*/
+		// if (hitCircleRectangle(enemie, endArea)) {
+		// 	enemie.vx *= -1;
+		// 	enemie.vy *= -1;
+		// }
 
 		/*###### Vérification de collision entre l'ennemie courant et le joueur ######*/
 		//if(hitCircleRectangle(enemie, player)) {
@@ -285,7 +309,7 @@ function play(delta) {
 	});
 	
 	/*###### Vérification de collision entre le joueur et la zone d'arrivée ######*/
-	if(intersects.boxBox(player.x,player.y,player.width,player.height,endArea.x+36,endArea.y+36,endArea.width-72,endArea.height-72)) {
+	if(intersects.boxBox(player.x,player.y,player.width,player.height,endArea.x+10,endArea.y,endArea.width,endArea.height)) {
 		gameScene.visible = false;
 		winScene.visible = true;
 	}
@@ -314,7 +338,7 @@ function findYCenterOfSpawnningArea() {
 }
 
 /*###### Fonction permettant la création et l'ajout dans la partie d'un ennemi ######*/
-function enemieCreation(x,y,direction,speed,hozizontalMovement) {
+function enemieCreation(x,y,direction,speed,horizontalMovement,distance) {
 	let enemie = new Graphics();
 	enemie.beginFill(0x9966FF);
 	enemie.drawCircle(0, 0, 6);
@@ -322,14 +346,17 @@ function enemieCreation(x,y,direction,speed,hozizontalMovement) {
 	
 	enemie.x = x;
 	enemie.y = y;
+	enemie.horizontalMovement = horizontalMovement;
 
-	if (hozizontalMovement) {
+	if (enemie.horizontalMovement) {
 		enemie.vx = speed * direction;
-		enemie.vy = 0;	
+		enemie.vy = 0;
 	}else{
 		enemie.vx = 0;	
 		enemie.vy = speed * direction;
 	}
+	enemie.distance = distance;
+	enemie.distanceStorage = distance;
 	gameScene.addChild(enemie);
 	enemies.push(enemie);
 }
