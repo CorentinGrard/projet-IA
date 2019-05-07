@@ -276,50 +276,12 @@ function play(delta) {
 		enemie.x += enemie.vx;
 		enemie.y += enemie.vy;
 		
-	  
-		/*###### Conditions de changement de sens de déplacement des ennemis ######*/
-
-
-
-
-
-		/*###### Verification de présence dans le plateau de jeu avec une marge de 10px pour le haut ######*/
-		// if (enemie.hozizontalMovement) {
-		// 	if (enemie.x == enemie.limitOne || enemie.x == enemie.limitTwo) {
-		// 		enemie.vx *= -1;
-		// 		enemie.vy *= -1;
-		// 	}
-		// }
-		// else {
-		// 	if(enemie.y == enemie.limitOne || enemie.y == enemie.limitTwo) {
-		// 		enemie.vx *= -1;
-		// 		enemie.vy *= -1;
-		// 	}
-		// }
-		// /*###### Verification de présence dans le plateau de jeu avec une marge de 10px pour le bas ######*/
-		// if (!gameBoardPhysic.contains(enemie.x - 10,enemie.y - 10)) {
-		// 	enemie.vx *= -1;
-		// 	enemie.vy *= -1;
-		// }
-
-		// /*###### Exclusion des ennemis de la zone de départ ######*/
-		// if (hitCircleRectangle(enemie, startArea)) {
-		// 	enemie.vx *= -1;
-		// 	enemie.vy *= -1;	
-		// }	
-
-		// /*###### Exclusion des ennemis de la zone d'arrivée ######*/
-		// if (hitCircleRectangle(enemie, endArea)) {
-		// 	enemie.vx *= -1;
-		// 	enemie.vy *= -1;
-		// }
-
 		/*###### Vérification de collision entre l'ennemie courant et le joueur ######*/
-		//if(hitCircleRectangle(enemie, player)) {
+		if(hitCircleRectangle(enemie, player)) {
 			/*###### Retour en zone de départ si collision ######*/
-		//	player.x = findXCenterOfSpawnningArea();
-		//	player.y = findYCenterOfSpawnningArea();
-		//}
+			player.x = findXCenterOfSpawnningArea();
+			player.y = findYCenterOfSpawnningArea();
+		}
 	});
 	
 	/*###### Vérification de collision entre le joueur et la zone d'arrivée ######*/
@@ -327,10 +289,6 @@ function play(delta) {
 		gameScene.visible = false;
 		winScene.visible = true;
 	}
-
-	//player.x = Math.round(player.x);
-	//player.y = Math.round(player.y);
-
 }
 
 /*###### Fonction retournant vrai si le cercle et le rectangle en paramètre sont en collision ######*/
