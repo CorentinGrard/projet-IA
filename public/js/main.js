@@ -10,30 +10,46 @@ const intersects = require('intersects');
 
 /*###### Paramètres de la map par coordonnés ######*/
 const tabMap = [
-	0, 0,             
+	[2, 0, 500, 0, "bottom"],
+	[500, 0, 500, 100, "left"],             
+	[300, 100, 500, 100, "top"],
+	[300, 100, 300, 400, "left"],
+	[300, 400, 500, 400, "bottom"],
+	[500, 400, 500, 500, "left"],
+	[2, 500, 500, 500, "top"],
+	[2, 400, 2, 500, "right"],
+	[2, 400, 200, 400, "bottom"],
+	[200, 100, 200, 400, "right"],
+	[2, 100, 200, 100, "top"],
+	[2, 0, 2, 100, "right"]                
+];
+
+const tabPolygon = [
+	2, 0,             
 	500, 0,             
 	500, 100,
 	300, 100,
 	300, 400,
 	500, 400,
 	500, 500,
-	0, 500,
-	0, 400,
+	2, 500,
+	2, 400,
 	200, 400,
 	200, 100,
-	0, 100                
-];
+	2, 100 
+
+]
 
 /*###### Paramètres de la zone de départ ######*/
 const startAreaValues = {
 
 	/*###### Positionnement de l'angle supérieur gauche de la zone de départ ######*/
-	x: 4,
-	y: 2,
+	x: 3,
+	y: 1,
 
 	/*###### Dimension de la zone de départ ######*/
-	width:96,
-	height:96,
+	width:98,
+	height:98
 
 };
 
@@ -42,12 +58,12 @@ const startAreaValues = {
 const endAreaValues = {
 
 	/*###### Positionnement de l'angle supérieur gauche de la zone de départ ######*/
-	x: 405,
+	x: 401,
 	y: 402,
 
 	/*###### Dimension de la zone d'arrivée ######*/
-	width:96,
-	height:96,
+	width:98,
+	height:98
 
 };
 
@@ -111,16 +127,18 @@ function setup() {
 
 	/*###### Différenciation de la forme en coordonnées et du dessin de la map ######*/
 	gameBoardDraw = new Graphics();
-	gameBoardPhysic = new Polygon(tabMap);
 
-	gameBoardDraw.beginFill(0x87CEFA);
-	gameBoardDraw.lineStyle(4, 0x000000, 1);
-	gameBoardDraw.drawPolygon(gameBoardPhysic);
+	gameBoardDraw.beginFill(0xC0C0C0);
+	gameBoardDraw.drawPolygon(tabPolygon);
 	gameBoardDraw.endFill();
-	gameBoardDraw.x = 2;
+	gameBoardDraw.x = 0;
 	gameBoardDraw.y = 0;
 	gameScene.addChild(gameBoardDraw);
 
+	tabWall = [];
+	tabMap.forEach(function(wall) {
+		wallCreation(wall[0],wall[1],wall[2],wall[3],wall[4]);
+	});
 
 	/*###### Création de la zone de départ et ajout à la scene de jeu ######*/
 	startArea = new Graphics();
@@ -144,7 +162,7 @@ function setup() {
 	
 	/*###### Création du joueur et ajout à la scene de jeu ######*/
 	player = new Graphics();
-	player.lineStyle(4, 0xFF3300, 1);
+	player.lineStyle(0, 0xFF3300, 1);
 	player.beginFill(0x66CCFF);
 	player.drawRect(0, 0, 32, 32);
 	player.endFill();
@@ -163,12 +181,12 @@ function setup() {
 	
 	/*###### Création des ennemies ######*/
 	enemies = [];
-	enemieCreation(125,25,1,2,true);
-	enemieCreation(480,75,-1,2,true);
-	enemieCreation(225,125,1,2,false);
-	enemieCreation(275,375,-1,2,false);
-	enemieCreation(25,425,1,2,true);
-	enemieCreation(375,475,-1,2,true);
+	enemieCreation(125,25,1,2,true,350);
+	enemieCreation(480,75,-1,2,true,350);
+	enemieCreation(225,125,1,2,false,250);
+	enemieCreation(275,375,-1,2,false,250);
+	enemieCreation(25,425,1,2,true,350);
+	enemieCreation(375,475,-1,2,true,350);
 
 	/*###### Mise à jour du statut de la partie ######*/
 	state = play;
@@ -200,81 +218,64 @@ function gameLoop(delta){
 
 /*###### Fonction appellée à chaque tic d'horloge ######*/
 function play(delta) {
+	//console.log("x : "+player.x + "		y : "+player.y)
 	const speed=5*delta;
 	player.vx=0;
 	player.vy=0;
 
 	/*###### Gestion du mouvement du personnage dans le plateau de jeu ######*/
 	if (Keyboard.isKeyDown('ArrowLeft', 'KeyQ')){
-		if(gameBoardPhysic.contains(player.x-5,player.y)) {
-			if(Keyboard.isKeyDown('ArrowUp', 'KeyZ') || Keyboard.isKeyDown('ArrowDown', 'KeyS')){
-				player.x -= speed/Math.sqrt(2);
-			}else{
-				player.x -= speed;
-			}
+		if(Keyboard.isKeyDown('ArrowUp', 'KeyZ') || Keyboard.isKeyDown('ArrowDown', 'KeyS')){
+			player.x -= speed/Math.sqrt(2);
+		}
+		else{
+			player.x -= speed;
 		}
 	}
 	if (Keyboard.isKeyDown('ArrowRight', 'KeyD') ){
-		if (gameBoardPhysic.contains((player.x + player.width),player.y)) {
-			if(Keyboard.isKeyDown('ArrowUp', 'KeyZ') || Keyboard.isKeyDown('ArrowDown', 'KeyS')){
-				player.x += speed/Math.sqrt(2);
-			}else{
-				player.x += speed;
-			}
+		if(Keyboard.isKeyDown('ArrowUp', 'KeyZ') || Keyboard.isKeyDown('ArrowDown', 'KeyS')){
+			player.x += speed/Math.sqrt(2);
+		}else{
+			player.x += speed;
 		}
 	}	
 	if (Keyboard.isKeyDown('ArrowUp', 'KeyZ')){
-		if (gameBoardPhysic.contains(player.x,player.y-5)) {
-			if(Keyboard.isKeyDown('ArrowRight', 'KeyD') || Keyboard.isKeyDown('ArrowLeft', 'KeyQ')){
-				player.y -= speed/Math.sqrt(2);
-			}else{
-				player.y -= speed;
-			}
+		if(Keyboard.isKeyDown('ArrowRight', 'KeyD') || Keyboard.isKeyDown('ArrowLeft', 'KeyQ')){
+			player.y -= speed/Math.sqrt(2);
+		}else{
+			player.y -= speed;
 		}
 	}	
 	if (Keyboard.isKeyDown('ArrowDown', 'KeyS')){
-		if (gameBoardPhysic.contains(player.x,(player.y+player.height))) {
-			if(Keyboard.isKeyDown('ArrowRight', 'KeyD') || Keyboard.isKeyDown('ArrowLeft', 'KeyQ')){
-				player.y += speed/Math.sqrt(2);
-			}else{
-				player.y += speed;
-			}
+		if(Keyboard.isKeyDown('ArrowRight', 'KeyD') || Keyboard.isKeyDown('ArrowLeft', 'KeyQ')){
+			player.y += Math.round(speed/Math.sqrt(2));
+		}else{
+			player.y += speed;
 		}
 	}
+
+	tabWall.forEach(function(courantWall) {
+		collision(courantWall,player);
+	});
+
 
 	/*###### Boucle sur tous les ennemis pour gérer leurs mouvements et leurs collisions ######*/
 	enemies.forEach(function(enemie) {
 
+		
 		/*###### Déplacement des ennemis à chaque tic d'horloge ######*/
+		
+		enemie.distance -= Math.abs(enemie.vx);
+		enemie.distance -= Math.abs(enemie.vy);
+		
+		if (enemie.distance <= 0) {
+			enemie.vx *= -1;
+			enemie.vy *= -1;
+			enemie.distance = enemie.distanceStorage;
+		}
 		enemie.x += enemie.vx;
 		enemie.y += enemie.vy;
 		
-	  
-		/*###### Conditions de changement de sens de déplacement des ennemis ######*/
-
-		/*###### Verification de présence dans le plateau de jeu avec une marge de 10px pour le haut ######*/
-		if (!gameBoardPhysic.contains(enemie.x + 10,enemie.y + 10) ) {
-			enemie.vx *= -1;
-			enemie.vy *= -1;
-		}
-		/*###### Verification de présence dans le plateau de jeu avec une marge de 10px pour le bas ######*/
-		if (!gameBoardPhysic.contains(enemie.x - 10,enemie.y - 10)) {
-			enemie.vx *= -1;
-			enemie.vy *= -1;
-		}
-
-		/*###### Exclusion des ennemis de la zone de départ ######*/
-		if (hitCircleRectangle(enemie, startArea)) {
-			enemie.vx *= -1;
-			enemie.vy *= -1;	
-		}	
-
-		/*###### Exclusion des ennemis de la zone d'arrivée ######*/
-		if (hitCircleRectangle(enemie, endArea)) {
-			enemie.vx *= -1;
-			enemie.vy *= -1;
-		}
-
 		/*###### Vérification de collision entre l'ennemie courant et le joueur ######*/
 		if(hitCircleRectangle(enemie, player)) {
 			/*###### Retour en zone de départ si collision ######*/
@@ -284,7 +285,7 @@ function play(delta) {
 	});
 	
 	/*###### Vérification de collision entre le joueur et la zone d'arrivée ######*/
-	if(intersects.boxBox(player.x,player.y,player.width,player.height,endArea.x+36,endArea.y+36,endArea.width-72,endArea.height-72)) {
+	if(intersects.boxBox(player.x,player.y,player.width,player.height,endArea.x+10,endArea.y,endArea.width,endArea.height)) {
 		gameScene.visible = false;
 		winScene.visible = true;
 	}
@@ -313,7 +314,7 @@ function findYCenterOfSpawnningArea() {
 }
 
 /*###### Fonction permettant la création et l'ajout dans la partie d'un ennemi ######*/
-function enemieCreation(x,y,direction,speed,hozizontalMovement) {
+function enemieCreation(x,y,direction,speed,horizontalMovement,distance) {
 	let enemie = new Graphics();
 	enemie.beginFill(0x9966FF);
 	enemie.drawCircle(0, 0, 6);
@@ -321,14 +322,77 @@ function enemieCreation(x,y,direction,speed,hozizontalMovement) {
 	
 	enemie.x = x;
 	enemie.y = y;
+	enemie.horizontalMovement = horizontalMovement;
 
-	if (hozizontalMovement) {
+	if (enemie.horizontalMovement) {
 		enemie.vx = speed * direction;
-		enemie.vy = 0;	
+		enemie.vy = 0;
 	}else{
 		enemie.vx = 0;	
 		enemie.vy = speed * direction;
 	}
+	enemie.distance = distance;
+	enemie.distanceStorage = distance;
 	gameScene.addChild(enemie);
 	enemies.push(enemie);
+}
+
+function wallCreation(firstPointX,firstPointY,lastPointX,lastPointY,gameSide) {
+
+	let wall = new Graphics();
+	wall.lineStyle(1,0x000000, 1);
+	wall.x = firstPointX;
+	wall.y = firstPointY;
+	wall.sx = lastPointX;
+	wall.sy = lastPointY;
+	wall.moveTo(0,0);
+	wall.lineTo((lastPointX - firstPointX),(lastPointY - firstPointY));
+	
+	if (wall.x == wall.sx) {
+		wall.verticality = true;
+	}
+	else {
+		wall.verticality = false;
+	}
+
+	wall.gameSide = gameSide;
+	tabWall.push(wall);
+	gameScene.addChild(wall);
+
+
+}
+
+
+function collision(courantWall,player) {
+
+	let inter;
+	if(courantWall.verticality == true) {
+		inter = intersects.lineBox(courantWall.x,courantWall.y+7,courantWall.sx,courantWall.sy-7,player.x,player.y,player.width,player.height);
+	}
+	else if (courantWall.verticality == false) {
+		inter = intersects.lineBox(courantWall.x+7,courantWall.y,courantWall.sx-7,courantWall.sy,player.x,player.y,player.width,player.height);
+	}
+
+
+	if (inter) {
+		
+		if (courantWall.verticality == true) {
+			if (courantWall.gameSide == "left") {
+				player.x = courantWall.x - player.width -1;
+			}
+			else if (courantWall.gameSide == "right") {
+				player.x = courantWall.x;
+			}
+		}
+		else{
+			if (courantWall.gameSide == "top") {
+				player.y = courantWall.y - player.height;
+			}
+			else if (courantWall.gameSide == "bottom") {
+				player.y = courantWall.y + 1;
+			}
+		}
+	}
+
+
 }
