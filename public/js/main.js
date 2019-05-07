@@ -10,30 +10,46 @@ const intersects = require('intersects');
 
 /*###### Paramètres de la map par coordonnés ######*/
 const tabMap = [
-	0, 0,             
+	[2, 0, 500, 0, "bottom"],
+	[500, 0, 500, 100, "left"],             
+	[300, 100, 500, 100, "top"],
+	[300, 100, 300, 400, "left"],
+	[300, 400, 500, 400, "bottom"],
+	[500, 400, 500, 500, "left"],
+	[2, 500, 500, 500, "top"],
+	[2, 400, 2, 500, "right"],
+	[2, 400, 200, 400, "bottom"],
+	[200, 100, 200, 400, "right"],
+	[2, 100, 200, 100, "top"],
+	[2, 0, 2, 100, "right"]                
+];
+
+const tabPolygon = [
+	2, 0,             
 	500, 0,             
 	500, 100,
 	300, 100,
 	300, 400,
 	500, 400,
 	500, 500,
-	0, 500,
-	0, 400,
+	2, 500,
+	2, 400,
 	200, 400,
 	200, 100,
-	0, 100                
-];
+	2, 100 
+
+]
 
 /*###### Paramètres de la zone de départ ######*/
 const startAreaValues = {
 
 	/*###### Positionnement de l'angle supérieur gauche de la zone de départ ######*/
-	x: 4,
-	y: 2,
+	x: 3,
+	y: 1,
 
 	/*###### Dimension de la zone de départ ######*/
-	width:96,
-	height:96,
+	width:98,
+	height:98
 
 };
 
@@ -42,12 +58,12 @@ const startAreaValues = {
 const endAreaValues = {
 
 	/*###### Positionnement de l'angle supérieur gauche de la zone de départ ######*/
-	x: 405,
+	x: 401,
 	y: 402,
 
 	/*###### Dimension de la zone d'arrivée ######*/
-	width:96,
-	height:96,
+	width:98,
+	height:98
 
 };
 
@@ -111,16 +127,18 @@ function setup() {
 
 	/*###### Différenciation de la forme en coordonnées et du dessin de la map ######*/
 	gameBoardDraw = new Graphics();
-	gameBoardPhysic = new Polygon(tabMap);
 
-	gameBoardDraw.beginFill(0x87CEFA);
-	gameBoardDraw.lineStyle(0, 0x000000, 1);
-	gameBoardDraw.drawPolygon(gameBoardPhysic);
+	gameBoardDraw.beginFill(0xC0C0C0);
+	gameBoardDraw.drawPolygon(tabPolygon);
 	gameBoardDraw.endFill();
-	gameBoardDraw.x = 2;
+	gameBoardDraw.x = 0;
 	gameBoardDraw.y = 0;
 	gameScene.addChild(gameBoardDraw);
 
+	tabWall = [];
+	tabMap.forEach(function(wall) {
+		wallCreation(wall[0],wall[1],wall[2],wall[3],wall[4]);
+	});
 
 	/*###### Création de la zone de départ et ajout à la scene de jeu ######*/
 	startArea = new Graphics();
@@ -144,7 +162,7 @@ function setup() {
 	
 	/*###### Création du joueur et ajout à la scene de jeu ######*/
 	player = new Graphics();
-	player.lineStyle(4, 0xFF3300, 1);
+	player.lineStyle(0, 0xFF3300, 1);
 	player.beginFill(0x66CCFF);
 	player.drawRect(0, 0, 32, 32);
 	player.endFill();
@@ -207,42 +225,39 @@ function play(delta) {
 
 	/*###### Gestion du mouvement du personnage dans le plateau de jeu ######*/
 	if (Keyboard.isKeyDown('ArrowLeft', 'KeyQ')){
-		if(gameBoardPhysic.contains(player.x-5,(player.y+player.height)) && gameBoardPhysic.contains(player.x-5,player.y)) {
-			if(Keyboard.isKeyDown('ArrowUp', 'KeyZ') || Keyboard.isKeyDown('ArrowDown', 'KeyS')){
-				player.x -= speed/Math.sqrt(2);
-			}
-			else{
-				player.x -= speed;
-			}
+		if(Keyboard.isKeyDown('ArrowUp', 'KeyZ') || Keyboard.isKeyDown('ArrowDown', 'KeyS')){
+			player.x -= speed/Math.sqrt(2);
+		}
+		else{
+			player.x -= speed;
 		}
 	}
 	if (Keyboard.isKeyDown('ArrowRight', 'KeyD') ){
-		if (gameBoardPhysic.contains((player.x + player.width+5),(player.y+player.height)) && gameBoardPhysic.contains((player.x + player.width+5),player.y)) {
-			if(Keyboard.isKeyDown('ArrowUp', 'KeyZ') || Keyboard.isKeyDown('ArrowDown', 'KeyS')){
-				player.x += speed/Math.sqrt(2);
-			}else{
-				player.x += speed;
-			}
+		if(Keyboard.isKeyDown('ArrowUp', 'KeyZ') || Keyboard.isKeyDown('ArrowDown', 'KeyS')){
+			player.x += speed/Math.sqrt(2);
+		}else{
+			player.x += speed;
 		}
 	}	
 	if (Keyboard.isKeyDown('ArrowUp', 'KeyZ')){
-		if (gameBoardPhysic.contains(player.x,player.y-5) && gameBoardPhysic.contains((player.x + player.width),player.y-5)) {
-			if(Keyboard.isKeyDown('ArrowRight', 'KeyD') || Keyboard.isKeyDown('ArrowLeft', 'KeyQ')){
-				player.y -= speed/Math.sqrt(2);
-			}else{
-				player.y -= speed;
-			}
+		if(Keyboard.isKeyDown('ArrowRight', 'KeyD') || Keyboard.isKeyDown('ArrowLeft', 'KeyQ')){
+			player.y -= speed/Math.sqrt(2);
+		}else{
+			player.y -= speed;
 		}
 	}	
 	if (Keyboard.isKeyDown('ArrowDown', 'KeyS')){
-		if (gameBoardPhysic.contains(player.x,(player.y+player.height+5)) && gameBoardPhysic.contains((player.x + player.width ),(player.y+player.height+5))) {
-			if(Keyboard.isKeyDown('ArrowRight', 'KeyD') || Keyboard.isKeyDown('ArrowLeft', 'KeyQ')){
-				player.y += speed/Math.sqrt(2);
-			}else{
-				player.y += speed;
-			}
+		if(Keyboard.isKeyDown('ArrowRight', 'KeyD') || Keyboard.isKeyDown('ArrowLeft', 'KeyQ')){
+			player.y += Math.round(speed/Math.sqrt(2));
+		}else{
+			player.y += speed;
 		}
 	}
+
+	tabWall.forEach(function(courantWall) {
+		collision(courantWall,player);
+	});
+
 
 	/*###### Boucle sur tous les ennemis pour gérer leurs mouvements et leurs collisions ######*/
 	enemies.forEach(function(enemie) {
@@ -254,7 +269,6 @@ function play(delta) {
 		enemie.distance -= Math.abs(enemie.vy);
 		
 		if (enemie.distance <= 0) {
-			console.log("ici");
 			enemie.vx *= -1;
 			enemie.vy *= -1;
 			enemie.distance = enemie.distanceStorage;
@@ -313,6 +327,10 @@ function play(delta) {
 		gameScene.visible = false;
 		winScene.visible = true;
 	}
+
+	//player.x = Math.round(player.x);
+	//player.y = Math.round(player.y);
+
 }
 
 /*###### Fonction retournant vrai si le cercle et le rectangle en paramètre sont en collision ######*/
@@ -359,4 +377,64 @@ function enemieCreation(x,y,direction,speed,horizontalMovement,distance) {
 	enemie.distanceStorage = distance;
 	gameScene.addChild(enemie);
 	enemies.push(enemie);
+}
+
+function wallCreation(firstPointX,firstPointY,lastPointX,lastPointY,gameSide) {
+
+	let wall = new Graphics();
+	wall.lineStyle(1,0x000000, 1);
+	wall.x = firstPointX;
+	wall.y = firstPointY;
+	wall.sx = lastPointX;
+	wall.sy = lastPointY;
+	wall.moveTo(0,0);
+	wall.lineTo((lastPointX - firstPointX),(lastPointY - firstPointY));
+	
+	if (wall.x == wall.sx) {
+		wall.verticality = true;
+	}
+	else {
+		wall.verticality = false;
+	}
+
+	wall.gameSide = gameSide;
+	tabWall.push(wall);
+	gameScene.addChild(wall);
+
+
+}
+
+
+function collision(courantWall,player) {
+
+	let inter;
+	if(courantWall.verticality == true) {
+		inter = intersects.lineBox(courantWall.x,courantWall.y+7,courantWall.sx,courantWall.sy-7,player.x,player.y,player.width,player.height);
+	}
+	else if (courantWall.verticality == false) {
+		inter = intersects.lineBox(courantWall.x+7,courantWall.y,courantWall.sx-7,courantWall.sy,player.x,player.y,player.width,player.height);
+	}
+
+
+	if (inter) {
+		
+		if (courantWall.verticality == true) {
+			if (courantWall.gameSide == "left") {
+				player.x = courantWall.x - player.width -1;
+			}
+			else if (courantWall.gameSide == "right") {
+				player.x = courantWall.x;
+			}
+		}
+		else{
+			if (courantWall.gameSide == "top") {
+				player.y = courantWall.y - player.height;
+			}
+			else if (courantWall.gameSide == "bottom") {
+				player.y = courantWall.y + 1;
+			}
+		}
+	}
+
+
 }
