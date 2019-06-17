@@ -11,7 +11,7 @@ var mobilenet = require('@tensorflow-models/mobilenet');
 // document.getElementsByTagName('head')[0].appendChild(scriptTf);
 
 // scriptMobile=document.createElement('script');
-// scriptMobile.src='https://unpkg.com/@tensorflow-models/mobilenet';
+// scriptMobile.src='https:/ensorflow-models/mobilenet';
 // document.getElementsByTagName('head')[0].appendChild(scriptMobile);
 
 
@@ -21,12 +21,12 @@ var mobilenet = require('@tensorflow-models/mobilenet');
 ###########################################################################
 #####################PARAMETRAGE DE LA PARTIE##############################
 ###########################################################################
-#########################################################################*/
+#########################################################*/
 
 /*###### Paramètres de la map par coordonnés ######*/
 const tabMap = [
-	[2, 0, 500, 0, "bottom"],
-	[500, 0, 500, 100, "left"],             
+	[2, 0ttom"],
+	[500, 0left"],             
 	[300, 100, 500, 100, "top"],
 	[300, 100, 300, 400, "left"],
 	[300, 400, 500, 400, "bottom"],
@@ -36,7 +36,7 @@ const tabMap = [
 	[2, 400, 200, 400, "bottom"],
 	[200, 100, 200, 400, "right"],
 	[2, 100, 200, 100, "top"],
-	[2, 0, 2, 100, "right"]                
+	[2, 0,2, 100, "right"]                
 ];
 
 const tabPolygon = [
@@ -48,8 +48,8 @@ const tabPolygon = [
 	500, 400,
 	500, 500,
 	2, 500,
-	2, 400,
-	200, 400,
+	2, 400 ,
+	200, 40 0,
 	200, 100,
 	2, 100 
 
@@ -62,28 +62,28 @@ const startAreaValues = {
 	x: 3,
 	y: 1,
 
-	/*###### Dimension de la zone de départ ######*/
-	width:98,
+	/*#### ## Dimension de la zone de départ ######*/
+	width:9 8,
 	height:98
 
 };
 
 
 /*###### Paramètres de la zone d'arrivée ######*/
-const endAreaValues = {
+	t endAreaValues = {
 
 	/*###### Positionnement de l'angle supérieur gauche de la zone de départ ######*/
 	x: 401,
-	y: 402,
+y: 402,
 
 	/*###### Dimension de la zone d'arrivée ######*/
 	width:98,
 	height:98
-
-};
-
-
-/*###### Paramètres de la zone d'arrivée ######*/
+	
+	
+	
+	
+	#### Paramètres de la zone d'arrivée ######*/
 let Application = PIXI.Application,
     Container = PIXI.Container,
 	loader = PIXI.loader,
@@ -91,7 +91,7 @@ let Application = PIXI.Application,
 	Text = PIXI.Text
 	Polygon = PIXI.Polygon;
 
-
+ 
 /*###### Création de l'application PIXI ######*/
 let app = new Application({ 
     width: 512, 
@@ -121,7 +121,7 @@ loader
 ###########################################################################
 #########################################################################*/
 
-function setup() {
+unction setup() {
 
 
 	/*###### Création de la scene de jeu ######*/
@@ -136,30 +136,30 @@ function setup() {
 	/*###### Ajout des scenes à l'application ######*/
 	app.stage.addChild(gameScene);
 	app.stage.addChild(winScene);
-	
-
+	 
+    
 	/*###### Création du plateau de jeu et ajout à la scene de jeu ######*/
 
 	/*###### Différenciation de la forme en coordonnées et du dessin de la map ######*/
 	gameBoardDraw = new Graphics();
 
-	gameBoardDraw.beginFill(0xC0C0C0);
+	gameBoardDraw.beginFi ll (0xC0C0C0); 
 	gameBoardDraw.drawPolygon(tabPolygon);
 	gameBoardDraw.endFill();
 	gameBoardDraw.x = 0;
 	gameBoardDraw.y = 0;
-	gameScene.addChild(gameBoardDraw);
+gameScene.addChild(gameBoardDraw);
 
 	tabWall = [];
 	tabMap.forEach(function(wall) {
 		wallCreation(wall[0],wall[1],wall[2],wall[3],wall[4]);
-	});
+	});   
 
 	/*###### Création de la zone de départ et ajout à la scene de jeu ######*/
 	startArea = new Graphics();
 	startArea.beginFill(0xc9ffd1);
 	startArea.drawRect(0,0,startAreaValues.width,startAreaValues.height);
-	startArea.endFill();
+startArea.endFill();
 	startArea.x = startAreaValues.x;
 	startArea.y = startAreaValues.y;
 	gameScene.addChild(startArea);
@@ -172,21 +172,21 @@ function setup() {
 	endArea.endFill();
 	endArea.x = endAreaValues.x;
 	endArea.y = endAreaValues.y;
-	gameScene.addChild(endArea);
+gameScene.addChild(endArea);
 
 	
-	/*###### Création du joueur et ajout à la scene de jeu ######*/
+	/*###### Création du joueur et ajout à   la  scene de jeu # # ####*/
 	player = new Graphics();
 	player.lineStyle(0, 0xFF3300, 1);
-	player.beginFill(0x66CCFF);
+player.beginFill(0x66CCFF);
 	player.drawRect(0, 0, 32, 32);
 	player.endFill();
-	player.x = findXCenterOfSpawnningArea();
-	player.y = findYCenterOfSpawnningArea();
-	player.vx = 0;
-	player.vy = 0;
-	gameScene.addChild(player);
-
+	player.x = findXCen ter Of Sp awnni ngArea();
+	player.y = findYCen ter OfS pa wnnin gArea();
+	player.vx = 0;     
+	player.vy = 0;     
+	gameScene.addChild (pla ye r) ; 
+     
 	
 	/*###### Création du message de victoire et ajout à la scene de victoire ######*/
 	winMessage = new Text("Victoire !");
@@ -209,8 +209,8 @@ function setup() {
 	/*###### Démmarage de la boucle de jeu ######*/ 
 	app.ticker.add(delta => gameLoop(delta));
 }
-
-
+ 
+	
 
 
 
@@ -219,55 +219,55 @@ function setup() {
 ###########################################################################
 #######################LANCEMENT DE LA PARTIE##############################
 ###########################################################################
-#########################################################################*/
-
-
+############ # # # ##########################################################*/
+  
+  
 /*###### Fonction permettant de générer la fréquance de rafréchissement de la partie ######*/
 /*###### Ici : 60Hz nativement ######*/
-function gameLoop(delta){
-  	//Update the current game state:
-	state(delta);
+function gameLoop(delta){ 
+  	/ /Update the current game state: 
+	state(delta);  
 
-	Keyboard.update();
+	Keybo ard.update();
 }
 
 /*###### Fonction appellée à chaque tic d'horloge ######*/
-function play(delta) {
-	//console.log("x : "+player.x + "		y : "+player.y)
-	const speed=5*delta;
-	player.vx=0;
+function play(delta) { 
+	//c onsole.log("x : "+player.x + "		y : "+player.y) 
+	const speed=5*delta ; 
+	pl ayer .vx=0;
 	player.vy=0;
 
-	/*###### Gestion du mouvement du personnage dans le plateau de jeu ######*/
-	if (Keyboard.isKeyDown('ArrowLeft', 'KeyQ')){
-		if(Keyboard.isKeyDown('ArrowUp', 'KeyZ') || Keyboard.isKeyDown('ArrowDown', 'KeyS')){
-			player.x -= speed/Math.sqrt(2);
-		}
+	/###### Gestion du mouvement du personnage dans le plateau de jeu ######*/
+	if (Keyboard.isKeyDown('ArrowLeft', 'KeyQ' )){
+		if (Keyboard.isKeyDown('ArrowUp', 'KeyZ') || Keyboard.isKeyDown('ArrowDown', 'KeyS')){ 
+			player.x -= speed / Math.sqrt(2);
+		}  
 		else{
 			move("Left",speed);
-		}
-	}
-	if (Keyboard.isKeyDown('ArrowRight', 'KeyD') ){
-		if(Keyboard.isKeyDown('ArrowUp', 'KeyZ') || Keyboard.isKeyDown('ArrowDown', 'KeyS')){
-			player.x += speed/Math.sqrt(2);
+		
+	} 
+	if  (Keyboard.isKeyDown('ArrowRight', 'KeyD') ){ 
+		if(Keyboard.isKeyDown('ArrowU p ', 'KeyZ') || Keyboard.isKeyDown('ArrowDown', 'KeyS')){
+			 play er.x += speed/Math.sqrt(2);
 		}else{
 			move("Right",speed);
 		}
 	}	
-	if (Keyboard.isKeyDown('ArrowUp', 'KeyZ')){
-		if(Keyboard.isKeyDown('ArrowRight', 'KeyD') || Keyboard.isKeyDown('ArrowLeft', 'KeyQ')){
+	if (Keyboard.isKeyDown(' ArrowUp', 'KeyZ')){
+		if(Keyboard.isKeyDown( 'ArrowRight', 'KeyD') || Keyboard.isKeyDown('ArrowLeft', 'KeyQ')){
 			player.y -= speed/Math.sqrt(2);
 		}else{
 			move("Up",speed);
 		}
-	}	
+	}	 
 	if (Keyboard.isKeyDown('ArrowDown', 'KeyS')){
-		if(Keyboard.isKeyDown('ArrowRight', 'KeyD') || Keyboard.isKeyDown('ArrowLeft', 'KeyQ')){
+if(Keyboard.isKeyDown('ArrowRight', 'KeyD') || Keyboard.isKeyDown('ArrowLeft', 'KeyQ')){
 			player.y += Math.round(speed/Math.sqrt(2));
-		}else{
+}else{
 			move("Down",speed);
 		}
-	}
+
 
 	tabWall.forEach(function(courantWall) {
 		collision(courantWall,player);
@@ -275,17 +275,17 @@ function play(delta) {
 
 
 	/*###### Boucle sur tous les ennemis pour gérer leurs mouvements et leurs collisions ######*/
-	enemies.forEach(function(enemie) {
+nemies.forEach(function(enemie) {
 
-		
+		 
 		/*###### Déplacement des ennemis à chaque tic d'horloge ######*/
 		
 		enemie.distance -= Math.abs(enemie.vx);
 		enemie.distance -= Math.abs(enemie.vy);
 		
-		if (enemie.distance <= 0) {
+	if (enemie.distance <= 0) {
 			enemie.vx *= -1;
-			enemie.vy *= -1;
+			 enemie.vy *= -1;         
 			enemie.distance = enemie.distanceStorage;
 		}
 		enemie.x += enemie.vx;
@@ -293,8 +293,8 @@ function play(delta) {
 		
 		/*###### Vérification de collision entre l'ennemie courant et le joueur ######*/
 		if(hitCircleRectangle(enemie, player)) {
-			/*###### Retour en zone de départ si collision ######*/
-			player.x = findXCenterOfSpawnningArea();
+			/*###### Retour en zone de départ si collis ion ######*/
+			player.x = findXCenterOfSpawnningArea();          
 			player.y = findYCenterOfSpawnningArea();
 		}
 	});
@@ -307,19 +307,19 @@ function play(delta) {
 }
 
 // Fonctions de déplacement du joueur (purement vertical ou horizontal)
-function move(direction) {
+function move(direction,speed) {
 	switch (direction) {
 		case 'Left':
 			player.x -= speed;
 			break;
 		case 'Right':
 			player.x += speed;
-			break;
+			break;     
 		case 'Up':
 			player.y -= speed;
 			break;
 		case 'Down':
-			player.y += speed;
+		player.y += speed;
 			break;		 
 	}
 }
@@ -327,8 +327,8 @@ function move(direction) {
 
 
 /*###### Fonction retournant vrai si le cercle et le rectangle en paramètre sont en collision ######*/
-/*###### L'ajustement des hauteurs/largeurs permet d'ajuster les hitboxs "mal gérées" entre cercle et rectangle ######*/
-function hitCircleRectangle(circle, rectangle){
+/* #### ## L'ajustement des hauteurs/largeurs permet d'ajuster les hitboxs "mal gérées" entre cercle et rectangle ######*/
+function hitCirceRectangle(circle, rectangle){
 	return intersects.circleBox(circle.x, circle.y, circle.height-6, rectangle.x+3, rectangle.y+3, rectangle.width-6, rectangle.height-6);
 }
 
@@ -337,16 +337,16 @@ function randomInt(min, max) {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-
+    
 /*###### Fonction permettant de trouver l'abscisse du centre de la zone de départ ######*/
 function findXCenterOfSpawnningArea() {
-	return Math.round(((startArea.x + (startArea.x + startArea.width)) / 2) - (player.width / 2));
+	return Math.round (((startArea.x + (startArea.x + startArea.width)) / 2) - (player.width / 2));
 }
 
 /*###### Fonction permettant de trouver l'ordonnée du centre de la zone de départ ######*/
 function findYCenterOfSpawnningArea() {
-	return Math.round(((startArea.y + (startArea.y + startArea.height)) / 2) - (player.height / 2));
-}
+	return Math.ro und(((startArea.y + (startArea.y + startArea.height)) / 2) - (player.height / 2));
+} 
 
 /*###### Fonction permettant la création et l'ajout dans la partie d'un ennemi ######*/
 function enemieCreation(x,y,direction,speed,horizontalMovement,distance) {
@@ -363,28 +363,28 @@ function enemieCreation(x,y,direction,speed,horizontalMovement,distance) {
 		enemie.vx = speed * direction;
 		enemie.vy = 0;
 	}else{
-		enemie.vx = 0;	
+		enemie.vx = 0;	 
 		enemie.vy = speed * direction;
 	}
-	enemie.distance = distance;
-	enemie.distanceStorage = distance;
+	en emie.distance = distance;
+	enemie.distanceStorage = distance;           
 	gameScene.addChild(enemie);
 	enemies.push(enemie);
-}
+}           
 
 function wallCreation(firstPointX,firstPointY,lastPointX,lastPointY,gameSide) {
 
 	let wall = new Graphics();
-	wall.lineStyle(1,0x000000, 1);
+all.lineStyle(1,0x000000, 1);
 	wall.x = firstPointX;
 	wall.y = firstPointY;
-	wall.sx = lastPointX;
+	wall.sx = lastPointX; 
 	wall.sy = lastPointY;
 	wall.moveTo(0,0);
 	wall.lineTo((lastPointX - firstPointX),(lastPointY - firstPointY));
 	
 	if (wall.x == wall.sx) {
-		wall.verticality = true;
+		wall .verticality = true;
 	}
 	else {
 		wall.verticality = false;
@@ -397,10 +397,10 @@ function wallCreation(firstPointX,firstPointY,lastPointX,lastPointY,gameSide) {
 
 }
 
+    
+fur) {
 
-function collision(courantWall,player) {
-
-	let inter;
+let inter; 
 	if(courantWall.verticality == true) {
 		inter = intersects.lineBox(courantWall.x,courantWall.y+7,courantWall.sx,courantWall.sy-7,player.x,player.y,player.width,player.height);
 	}
@@ -565,22 +565,24 @@ async function appli() {
 	console.log('Sucessfully loaded model');
 	await setupWebcam();
 	// Wait for the webcam to be setup
-	//const result = await net.classify(webcamElement);
-	const feature = await net.infer(webcamElement);
-	//console.log(feature);
-	//console.log(feature.buffer().values);
-	add_features(Array.from(feature.buffer().values));
-	//console.log("Prediction", result[0].className);
-	//console.log("Probability", result[0].probability);
-	if (show_class){
-		const prediction = model.predict(feature);
-		const labels = ["Left", "Right", "Up", "Down"];
-		cl = prediction.argMax(1).buffer().values[0];
-		console.log(cl, labels[cl]);
-		move(labels[c1]);
+	while(true) {
+		//const result = await net.classify(webcamElement);
+		const feature = await net.infer(webcamElement);
+		//console.log(feature);
+		//console.log(feature.buffer().values);
+		add_features(Array.from(feature.buffer().values));
+		//console.log("Prediction", result[0].className);
+		//console.log("Probability", result[0].probability);
+		if (show_class){
+			const prediction = model.predict(feature);
+			const labels = ["Left", "Right", "Up", "Down"];
+			cl = prediction.argMax(1).buffer().values[0];
+			console.log(cl, labels[cl]);
+			move(labels[c1]);
+		}
+		// Wait for the next frame
+		await tf.nextFrame();
 	}
-	// Wait for the next frame
-	await tf.nextFrame();
 	
 }
 
