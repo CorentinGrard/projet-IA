@@ -26,7 +26,7 @@ var mobilenet = require('@tensorflow-models/mobilenet');
 /*###### Paramètres de la map par coordonnés ######*/
 const tabMap = [
 	[2, 0, 500, 0, "bottom"],
-	[500, 0, 500, 100, "left"],             
+	[500, 0, 500, 100, "left"],
 	[300, 100, 500, 100, "top"],
 	[300, 100, 300, 400, "left"],
 	[300, 400, 500, 400, "bottom"],
@@ -36,12 +36,12 @@ const tabMap = [
 	[2, 400, 200, 400, "bottom"],
 	[200, 100, 200, 400, "right"],
 	[2, 100, 200, 100, "top"],
-	[2, 0, 2, 100, "right"]                
+	[2, 0, 2, 100, "right"]
 ];
 
 const tabPolygon = [
-	2, 0,             
-	500, 0,             
+	2, 0,
+	500, 0,
 	500, 100,
 	300, 100,
 	300, 400,
@@ -51,7 +51,7 @@ const tabPolygon = [
 	2, 400,
 	200, 400,
 	200, 100,
-	2, 100 
+	2, 100
 
 ]
 
@@ -63,8 +63,8 @@ const startAreaValues = {
 	y: 1,
 
 	/*###### Dimension de la zone de départ ######*/
-	width:98,
-	height:98
+	width: 98,
+	height: 98
 
 };
 
@@ -77,28 +77,28 @@ const endAreaValues = {
 	y: 402,
 
 	/*###### Dimension de la zone d'arrivée ######*/
-	width:98,
-	height:98
+	width: 98,
+	height: 98
 
 };
 
 
 /*###### Paramètres de la zone d'arrivée ######*/
 let Application = PIXI.Application,
-    Container = PIXI.Container,
+	Container = PIXI.Container,
 	loader = PIXI.loader,
 	Graphics = PIXI.Graphics,
 	Text = PIXI.Text
-	Polygon = PIXI.Polygon;
+Polygon = PIXI.Polygon;
 
 
 /*###### Création de l'application PIXI ######*/
-let app = new Application({ 
-    width: 512, 
-    height: 512,                       
-    antialiasing: true, 
-    transparent: true, 
-    resolution: 1
+let app = new Application({
+	width: 512,
+	height: 512,
+	antialiasing: true,
+	transparent: true,
+	resolution: 1
 });
 
 
@@ -106,7 +106,7 @@ let app = new Application({
 document.body.appendChild(app.view);
 
 /*###### Définition de toutes les variables ######*/
-let state, player, gameScene,winScene, enemies, startArea, endArea, winMessage;
+let state, player, gameScene, winScene, enemies, startArea, endArea, winMessage;
 
 /*###### Chargement de la coufiguration ci-dessous ######*/
 loader
@@ -136,7 +136,7 @@ function setup() {
 	/*###### Ajout des scenes à l'application ######*/
 	app.stage.addChild(gameScene);
 	app.stage.addChild(winScene);
-	
+
 
 	/*###### Création du plateau de jeu et ajout à la scene de jeu ######*/
 
@@ -151,30 +151,30 @@ function setup() {
 	gameScene.addChild(gameBoardDraw);
 
 	tabWall = [];
-	tabMap.forEach(function(wall) {
-		wallCreation(wall[0],wall[1],wall[2],wall[3],wall[4]);
+	tabMap.forEach(function (wall) {
+		wallCreation(wall[0], wall[1], wall[2], wall[3], wall[4]);
 	});
 
 	/*###### Création de la zone de départ et ajout à la scene de jeu ######*/
 	startArea = new Graphics();
 	startArea.beginFill(0xc9ffd1);
-	startArea.drawRect(0,0,startAreaValues.width,startAreaValues.height);
+	startArea.drawRect(0, 0, startAreaValues.width, startAreaValues.height);
 	startArea.endFill();
 	startArea.x = startAreaValues.x;
 	startArea.y = startAreaValues.y;
 	gameScene.addChild(startArea);
-	
-	 
+
+
 	/*###### Création de la zone d'arrivée et ajout à la scene de jeu ######*/
 	endArea = new Graphics();
 	endArea.beginFill(0xFF0000);
-	endArea.drawRect(0,0,endAreaValues.width,endAreaValues.height);
+	endArea.drawRect(0, 0, endAreaValues.width, endAreaValues.height);
 	endArea.endFill();
 	endArea.x = endAreaValues.x;
 	endArea.y = endAreaValues.y;
 	gameScene.addChild(endArea);
 
-	
+
 	/*###### Création du joueur et ajout à la scene de jeu ######*/
 	player = new Graphics();
 	player.lineStyle(0, 0xFF3300, 1);
@@ -187,26 +187,26 @@ function setup() {
 	player.vy = 0;
 	gameScene.addChild(player);
 
-	
+
 	/*###### Création du message de victoire et ajout à la scene de victoire ######*/
 	winMessage = new Text("Victoire !");
-	winMessage.position.set(app.view.width/2,app.view.height/2);
+	winMessage.position.set(app.view.width / 2, app.view.height / 2);
 	winScene.addChild(winMessage);
 
-	
+
 	/*###### Création des ennemies ######*/
 	enemies = [];
-	enemieCreation(125,25,1,2,true,350);
-	enemieCreation(480,75,-1,2,true,350);
-	enemieCreation(225,125,1,2,false,250);
-	enemieCreation(275,375,-1,2,false,250);
-	enemieCreation(25,425,1,2,true,350);
-	enemieCreation(375,475,-1,2,true,350);
+	enemieCreation(125, 25, 1, 2, true, 350);
+	enemieCreation(480, 75, -1, 2, true, 350);
+	enemieCreation(225, 125, 1, 2, false, 250);
+	enemieCreation(275, 375, -1, 2, false, 250);
+	enemieCreation(25, 425, 1, 2, true, 350);
+	enemieCreation(375, 475, -1, 2, true, 350);
 
 	/*###### Mise à jour du statut de la partie ######*/
 	state = play;
 
-	/*###### Démmarage de la boucle de jeu ######*/ 
+	/*###### Démmarage de la boucle de jeu ######*/
 	app.ticker.add(delta => gameLoop(delta));
 }
 
@@ -224,8 +224,8 @@ function setup() {
 
 /*###### Fonction permettant de générer la fréquance de rafréchissement de la partie ######*/
 /*###### Ici : 60Hz nativement ######*/
-function gameLoop(delta){
-  	//Update the current game state:
+function gameLoop(delta) {
+	//Update the current game state:
 	state(delta);
 
 	Keyboard.update();
@@ -234,55 +234,55 @@ function gameLoop(delta){
 /*###### Fonction appellée à chaque tic d'horloge ######*/
 function play(delta) {
 	//console.log("x : "+player.x + "		y : "+player.y)
-	const speed=5*delta;
-	player.vx=0;
-	player.vy=0;
+	const speed = 5 * delta;
+	player.vx = 0;
+	player.vy = 0;
 
 	/*###### Gestion du mouvement du personnage dans le plateau de jeu ######*/
-	if (Keyboard.isKeyDown('ArrowLeft', 'KeyQ')){
-		if(Keyboard.isKeyDown('ArrowUp', 'KeyZ') || Keyboard.isKeyDown('ArrowDown', 'KeyS')){
-			player.x -= speed/Math.sqrt(2);
+	if (Keyboard.isKeyDown('ArrowLeft', 'KeyQ')) {
+		if (Keyboard.isKeyDown('ArrowUp', 'KeyZ') || Keyboard.isKeyDown('ArrowDown', 'KeyS')) {
+			player.x -= speed / Math.sqrt(2);
 		}
-		else{
-			move("Left",speed);
+		else {
+			move("Left", speed);
 		}
 	}
-	if (Keyboard.isKeyDown('ArrowRight', 'KeyD') ){
-		if(Keyboard.isKeyDown('ArrowUp', 'KeyZ') || Keyboard.isKeyDown('ArrowDown', 'KeyS')){
-			player.x += speed/Math.sqrt(2);
-		}else{
-			move("Right",speed);
+	if (Keyboard.isKeyDown('ArrowRight', 'KeyD')) {
+		if (Keyboard.isKeyDown('ArrowUp', 'KeyZ') || Keyboard.isKeyDown('ArrowDown', 'KeyS')) {
+			player.x += speed / Math.sqrt(2);
+		} else {
+			move("Right", speed);
 		}
-	}	
-	if (Keyboard.isKeyDown('ArrowUp', 'KeyZ')){
-		if(Keyboard.isKeyDown('ArrowRight', 'KeyD') || Keyboard.isKeyDown('ArrowLeft', 'KeyQ')){
-			player.y -= speed/Math.sqrt(2);
-		}else{
-			move("Up",speed);
+	}
+	if (Keyboard.isKeyDown('ArrowUp', 'KeyZ')) {
+		if (Keyboard.isKeyDown('ArrowRight', 'KeyD') || Keyboard.isKeyDown('ArrowLeft', 'KeyQ')) {
+			player.y -= speed / Math.sqrt(2);
+		} else {
+			move("Up", speed);
 		}
-	}	
-	if (Keyboard.isKeyDown('ArrowDown', 'KeyS')){
-		if(Keyboard.isKeyDown('ArrowRight', 'KeyD') || Keyboard.isKeyDown('ArrowLeft', 'KeyQ')){
-			player.y += Math.round(speed/Math.sqrt(2));
-		}else{
-			move("Down",speed);
+	}
+	if (Keyboard.isKeyDown('ArrowDown', 'KeyS')) {
+		if (Keyboard.isKeyDown('ArrowRight', 'KeyD') || Keyboard.isKeyDown('ArrowLeft', 'KeyQ')) {
+			player.y += Math.round(speed / Math.sqrt(2));
+		} else {
+			move("Down", speed);
 		}
 	}
 
-	tabWall.forEach(function(courantWall) {
-		collision(courantWall,player);
+	tabWall.forEach(function (courantWall) {
+		collision(courantWall, player);
 	});
 
 
 	/*###### Boucle sur tous les ennemis pour gérer leurs mouvements et leurs collisions ######*/
-	enemies.forEach(function(enemie) {
+	enemies.forEach(function (enemie) {
 
-		
+
 		/*###### Déplacement des ennemis à chaque tic d'horloge ######*/
-		
+
 		enemie.distance -= Math.abs(enemie.vx);
 		enemie.distance -= Math.abs(enemie.vy);
-		
+
 		if (enemie.distance <= 0) {
 			enemie.vx *= -1;
 			enemie.vy *= -1;
@@ -290,17 +290,17 @@ function play(delta) {
 		}
 		enemie.x += enemie.vx;
 		enemie.y += enemie.vy;
-		
+
 		/*###### Vérification de collision entre l'ennemie courant et le joueur ######*/
-		if(hitCircleRectangle(enemie, player)) {
+		if (hitCircleRectangle(enemie, player)) {
 			/*###### Retour en zone de départ si collision ######*/
 			player.x = findXCenterOfSpawnningArea();
 			player.y = findYCenterOfSpawnningArea();
 		}
 	});
-	
+
 	/*###### Vérification de collision entre le joueur et la zone d'arrivée ######*/
-	if(intersects.boxBox(player.x,player.y,player.width,player.height,endArea.x+10,endArea.y,endArea.width,endArea.height)) {
+	if (intersects.boxBox(player.x, player.y, player.width, player.height, endArea.x + 10, endArea.y, endArea.width, endArea.height)) {
 		gameScene.visible = false;
 		winScene.visible = true;
 	}
@@ -320,7 +320,7 @@ function move(direction) {
 			break;
 		case 'Down':
 			player.y += speed;
-			break;		 
+			break;
 	}
 }
 
@@ -328,8 +328,8 @@ function move(direction) {
 
 /*###### Fonction retournant vrai si le cercle et le rectangle en paramètre sont en collision ######*/
 /*###### L'ajustement des hauteurs/largeurs permet d'ajuster les hitboxs "mal gérées" entre cercle et rectangle ######*/
-function hitCircleRectangle(circle, rectangle){
-	return intersects.circleBox(circle.x, circle.y, circle.height-6, rectangle.x+3, rectangle.y+3, rectangle.width-6, rectangle.height-6);
+function hitCircleRectangle(circle, rectangle) {
+	return intersects.circleBox(circle.x, circle.y, circle.height - 6, rectangle.x + 3, rectangle.y + 3, rectangle.width - 6, rectangle.height - 6);
 }
 
 /*###### Fonction permettant de générer un entier aléatoire présent entre deux entiers ######*/
@@ -349,12 +349,12 @@ function findYCenterOfSpawnningArea() {
 }
 
 /*###### Fonction permettant la création et l'ajout dans la partie d'un ennemi ######*/
-function enemieCreation(x,y,direction,speed,horizontalMovement,distance) {
+function enemieCreation(x, y, direction, speed, horizontalMovement, distance) {
 	let enemie = new Graphics();
 	enemie.beginFill(0x9966FF);
 	enemie.drawCircle(0, 0, 6);
 	enemie.endFill();
-	
+
 	enemie.x = x;
 	enemie.y = y;
 	enemie.horizontalMovement = horizontalMovement;
@@ -362,8 +362,8 @@ function enemieCreation(x,y,direction,speed,horizontalMovement,distance) {
 	if (enemie.horizontalMovement) {
 		enemie.vx = speed * direction;
 		enemie.vy = 0;
-	}else{
-		enemie.vx = 0;	
+	} else {
+		enemie.vx = 0;
 		enemie.vy = speed * direction;
 	}
 	enemie.distance = distance;
@@ -372,17 +372,17 @@ function enemieCreation(x,y,direction,speed,horizontalMovement,distance) {
 	enemies.push(enemie);
 }
 
-function wallCreation(firstPointX,firstPointY,lastPointX,lastPointY,gameSide) {
+function wallCreation(firstPointX, firstPointY, lastPointX, lastPointY, gameSide) {
 
 	let wall = new Graphics();
-	wall.lineStyle(1,0x000000, 1);
+	wall.lineStyle(1, 0x000000, 1);
 	wall.x = firstPointX;
 	wall.y = firstPointY;
 	wall.sx = lastPointX;
 	wall.sy = lastPointY;
-	wall.moveTo(0,0);
-	wall.lineTo((lastPointX - firstPointX),(lastPointY - firstPointY));
-	
+	wall.moveTo(0, 0);
+	wall.lineTo((lastPointX - firstPointX), (lastPointY - firstPointY));
+
 	if (wall.x == wall.sx) {
 		wall.verticality = true;
 	}
@@ -398,28 +398,28 @@ function wallCreation(firstPointX,firstPointY,lastPointX,lastPointY,gameSide) {
 }
 
 
-function collision(courantWall,player) {
+function collision(courantWall, player) {
 
 	let inter;
-	if(courantWall.verticality == true) {
-		inter = intersects.lineBox(courantWall.x,courantWall.y+7,courantWall.sx,courantWall.sy-7,player.x,player.y,player.width,player.height);
+	if (courantWall.verticality == true) {
+		inter = intersects.lineBox(courantWall.x, courantWall.y + 7, courantWall.sx, courantWall.sy - 7, player.x, player.y, player.width, player.height);
 	}
 	else if (courantWall.verticality == false) {
-		inter = intersects.lineBox(courantWall.x+7,courantWall.y,courantWall.sx-7,courantWall.sy,player.x,player.y,player.width,player.height);
+		inter = intersects.lineBox(courantWall.x + 7, courantWall.y, courantWall.sx - 7, courantWall.sy, player.x, player.y, player.width, player.height);
 	}
 
 
 	if (inter) {
-		
+
 		if (courantWall.verticality == true) {
 			if (courantWall.gameSide == "left") {
-				player.x = courantWall.x - player.width -1;
+				player.x = courantWall.x - player.width - 1;
 			}
 			else if (courantWall.gameSide == "right") {
 				player.x = courantWall.x;
 			}
 		}
-		else{
+		else {
 			if (courantWall.gameSide == "top") {
 				player.y = courantWall.y - player.height;
 			}
@@ -477,79 +477,78 @@ down.addEventListener("mouseup", () => { down.clicked = false; });
 up.addEventListener("mouseup", () => { up.clicked = false; });
 
 // Input
-const input = tf.input({batchShape: [null, 1000]});
+const input = tf.input({ batchShape: [null, 1000] });
 // Output
-const output = tf.layers.dense({useBias: true, units: 4, activation: 'softmax'}).apply(input);
+const output = tf.layers.dense({ useBias: true, units: 4, activation: 'softmax' }).apply(input);
 // Create the model
-const model = tf.model({inputs: input, outputs: output});
+const model = tf.model({ inputs: input, outputs: output });
 // Optimize
 const optimizer = tf.train.adam(0.01);
 // Compile the model
-model.compile({optimizer: optimizer, loss: 'categoricalCrossentropy'});
+model.compile({ optimizer: optimizer, loss: 'categoricalCrossentropy' });
 
 async function setupWebcam() {
 	return new Promise((resolve, reject) => {
-	  const navigatorAny = navigator;
-	  navigator.getUserMedia = navigator.getUserMedia ||
-		  navigatorAny.webkitGetUserMedia || navigatorAny.mozGetUserMedia ||
-		  navigatorAny.msGetUserMedia;
-	  if (navigator.getUserMedia) {
-		navigator.getUserMedia({video: true},
-		  stream => {
-			webcamElement.srcObject = stream;
-			webcamElement.addEventListener('loadeddata',  () => resolve(), false);
-		  },
-		  error => reject());
-	  } 
-	  else {
-		reject();
-	  }
+		const navigatorAny = navigator;
+		navigator.getUserMedia = navigator.getUserMedia ||
+			navigatorAny.webkitGetUserMedia || navigatorAny.mozGetUserMedia ||
+			navigatorAny.msGetUserMedia;
+		if (navigator.getUserMedia) {
+			navigator.getUserMedia({ video: true },
+				stream => {
+					webcamElement.srcObject = stream;
+					webcamElement.addEventListener('loadeddata', () => resolve(), false);
+				},
+				error => reject());
+		}
+		else {
+			reject();
+		}
 	});
 }
 
-
-function show(){
+function show() {
 	show_class = true;
 }
 
 
-function train(){
+function train() {
 	// Train the model
 	console.log("Train");
-	const tf_features = tf.tensor2d(features, shape=[features.length, 1000])
+	const tf_features = tf.tensor2d(features, shape = [features.length, 1000])
 	const tf_targets = tf.tensor(targets);
 	model.fit(tf_features, tf_targets, {
-	batchSize: 32,
-	epochs: 75,
-	callbacks: {
-		onBatchEnd: async (batch, logs) => {
-		// Log the cost for every batch that is fed.
-		console.log(logs.loss.toFixed(5));
-		await tf.nextFrame();
+		batchSize: 32,
+		epochs: 75,
+		callbacks: {
+			onBatchEnd: async (batch, logs) => {
+				// Log the cost for every batch that is fed.
+				console.log(logs.loss.toFixed(5));
+				await tf.nextFrame();
+			}
 		}
-	}
 	});
 }
 
 
-function add_features(feature){
+function add_features(feature) {
 	// Add features to one class if one button is pressed
-	if (left.clicked){
+	if (left.clicked) {
 		console.log("gather left");
 		features.push(feature);
 		targets.push([1., 0., 0., 0.]);
 	}
-	else if (right.clicked){
+	else if (right.clicked) {
 		console.log("gather right");
 		features.push(feature);
 		targets.push([0., 1., 0., 0.]);
 	}
-	else if (up.clicked){
+	else if (up.clicked) {
 		console.log("gather up");
 		features.push(feature);
 		targets.push([0., 0., 1., 0.]);
 	}
-	else if (down.clicked){
+	else if (down.clicked) {
 		console.log("gather down");
 		features.push(feature);
 		targets.push([0., 0., 0., 1.]);
@@ -572,7 +571,7 @@ async function appli() {
 	add_features(Array.from(feature.buffer().values));
 	//console.log("Prediction", result[0].className);
 	//console.log("Probability", result[0].probability);
-	if (show_class){
+	if (show_class) {
 		const prediction = model.predict(feature);
 		const labels = ["Left", "Right", "Up", "Down"];
 		cl = prediction.argMax(1).buffer().values[0];
@@ -581,7 +580,7 @@ async function appli() {
 	}
 	// Wait for the next frame
 	await tf.nextFrame();
-	
+
 }
 
 appli();
