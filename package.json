@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/CorentinGrard/projet-IA#readme",
   "dependencies": {
+    "@tensorflow/tfjs": "^1.2.1",
     "browserify": "^16.2.3",
     "http-server": "^0.11.1",
     "intersects": "^2.5.2",
