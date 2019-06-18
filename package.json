@@ -4,7 +4,7 @@
   "description": "test test",
   "main": "index.html",
   "scripts": {
-    "dev": "beefy public/js/main.js --live --open",
+    "dev": "beefy public/js/main.js --live --open --index public/index.html",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "http-server"
   },

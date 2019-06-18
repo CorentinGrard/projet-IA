@@ -69,6 +69,8 @@ const startAreaValues = {
 };
 
 
+
+
 /*###### Paramètres de la zone d'arrivée ######*/
 const endAreaValues = {
 
@@ -234,9 +236,10 @@ function gameLoop(delta) {
 /*###### Fonction appellée à chaque tic d'horloge ######*/
 function play(delta) {
 	//console.log("x : "+player.x + "		y : "+player.y)
-	const speed = 5 * delta;
+	
 	player.vx = 0;
 	player.vy = 0;
+	const speed = 5 * delta;
 
 	/*###### Gestion du mouvement du personnage dans le plateau de jeu ######*/
 	if (Keyboard.isKeyDown('ArrowLeft', 'KeyQ')) {
@@ -307,8 +310,9 @@ function play(delta) {
 }
 
 // Fonctions de déplacement du joueur (purement vertical ou horizontal)
-function move(direction) {
+function move(direction,speed) {
 	switch (direction) {
+		
 		case 'Left':
 			player.x -= speed;
 			break;
@@ -439,34 +443,29 @@ function collision(courantWall, player) {
 
 // Partie IA
 
-var section = document.createElement("section");
-section.innerHTML = `
-<video autoplay playsinline muted id="webcam" width="224" height="224"></video>
-<button id="left">Left</button>
-<button id="right">Right</button>
-<button id="up">Up</button>
-<button id="down">Down</button>
-<br>
-<button onclick="train()" id=\"train\">train</button>
-<button onclick="show()" id=\"train\">show</button>
-`;
+// var section = document.createElement("section");
+// section.innerHTML = `
+// <video autoplay playsinline muted id="webcam" width="224" height="224"></video>
+// <button id="left">Left</button>
+// <button id="right">Right</button>
+// <button id="up">Up</button>
+// <button id="down">Down</button>
+// <br>
+// <button onclick="train()" id=\"train\">train</button>
+// <button onclick="show()" id=\"train\">show</button>
+// `;
 
-document.body.appendChild(section);
+// document.body.appendChild(section);
 
 const webcamElement = document.getElementById('webcam');
-
 // Select buttons
 const left = document.getElementById("left");
 const right = document.getElementById("right");
 const up = document.getElementById("up");
 const down = document.getElementById("down")
-
 var show_class = false;
-
 var features = [];
-
 var targets = [];
-
 left.addEventListener("mousedown", () => { left.clicked = true; });
 right.addEventListener("mousedown", () => { right.clicked = true; });
 down.addEventListener("mousedown", () => { down.clicked = true; });
@@ -476,111 +475,133 @@ right.addEventListener("mouseup", () => { right.clicked = false; });
 down.addEventListener("mouseup", () => { down.clicked = false; });
 up.addEventListener("mouseup", () => { up.clicked = false; });
 
+
+document.getElementById("train").onclick = function() {
+	train();
+}
+
+document.getElementById("show").onclick = function() {
+	show();
+}
+
+/*
+	Create the model
+*/
 // Input
-const input = tf.input({ batchShape: [null, 1000] });
+const input = tf.input({batchShape: [null, 1000]});
 // Output
-const output = tf.layers.dense({ useBias: true, units: 4, activation: 'softmax' }).apply(input);
+const output = tf.layers.dense({useBias: true, units: 4, activation: 'softmax'}).apply(input);
 // Create the model
-const model = tf.model({ inputs: input, outputs: output });
+const model = tf.model({inputs: input, outputs: output});
 // Optimize
 const optimizer = tf.train.adam(0.01);
 // Compile the model
-model.compile({ optimizer: optimizer, loss: 'categoricalCrossentropy' });
+model.compile({optimizer: optimizer, loss: 'categoricalCrossentropy'});
+// Methode used to laod the webcam
+// async function setupWebcam() {
+//   return new Promise((resolve, reject) => {
+//     const navigatorAny = navigator;
+//     navigator.getUserMedia = navigator.getUserMedia ||
+//         navigatorAny.webkitGetUserMedia || navigatorAny.mozGetUserMedia ||
+//         navigatorAny.msGetUserMedia;
+//     if (navigator.getUserMedia) {
+//       navigator.getUserMedia({video: true},
+//         stream => {
+//           webcamElement.srcObject = stream;
+//           webcamElement.addEventListener('loadeddata',  () => resolve(), false);
+//         },
+//         error => reject());
+//     } else {
+//       reject();
+//     }
+//   });
+// }
 
 async function setupWebcam() {
-	return new Promise((resolve, reject) => {
-		const navigatorAny = navigator;
-		navigator.getUserMedia = navigator.getUserMedia ||
-			navigatorAny.webkitGetUserMedia || navigatorAny.mozGetUserMedia ||
-			navigatorAny.msGetUserMedia;
-		if (navigator.getUserMedia) {
-			navigator.getUserMedia({ video: true },
-				stream => {
-					webcamElement.srcObject = stream;
-					webcamElement.addEventListener('loadeddata', () => resolve(), false);
-				},
-				error => reject());
-		}
-		else {
-			reject();
-		}
-	});
+  return new Promise((resolve, reject) => {
+	
+	navigator.mediaDevices.getUserMedia({video: true})
+	  .then(function(mediaStream) {
+		webcamElement.srcObject = mediaStream;
+		// webcamElement.onloadedmetadata = function(e) {
+		// 	webcamElement.play();
+		//   };
+		  webcamElement.addEventListener('loadeddata',  () => resolve(), false);
+	  });
+  });
 }
 
-function show() {
+function show(){
 	show_class = true;
 }
-
-
-function train() {
+function train(){
 	// Train the model
 	console.log("Train");
-	const tf_features = tf.tensor2d(features, shape = [features.length, 1000])
+	const tf_features = tf.tensor2d(features, shape=[features.length, 1000])
 	const tf_targets = tf.tensor(targets);
 	model.fit(tf_features, tf_targets, {
-		batchSize: 32,
-		epochs: 75,
-		callbacks: {
-			onBatchEnd: async (batch, logs) => {
-				// Log the cost for every batch that is fed.
-				console.log(logs.loss.toFixed(5));
-				await tf.nextFrame();
-			}
+	  batchSize: 32,
+	  epochs: 75,
+	  callbacks: {
+		onBatchEnd: async (batch, logs) => {
+		  // Log the cost for every batch that is fed.
+		  console.log(logs.loss.toFixed(5));
+		  await tf.nextFrame();
 		}
+	  }
 	});
 }
-
-
-function add_features(feature) {
+function add_features(feature){
 	// Add features to one class if one button is pressed
-	if (left.clicked) {
+	if (left.clicked){
 		console.log("gather left");
 		features.push(feature);
 		targets.push([1., 0., 0., 0.]);
 	}
-	else if (right.clicked) {
+	else if (right.clicked){
 		console.log("gather right");
 		features.push(feature);
 		targets.push([0., 1., 0., 0.]);
 	}
-	else if (up.clicked) {
+	else if (up.clicked){
 		console.log("gather up");
 		features.push(feature);
 		targets.push([0., 0., 1., 0.]);
 	}
-	else if (down.clicked) {
+	else if (down.clicked){
 		console.log("gather down");
 		features.push(feature);
 		targets.push([0., 0., 0., 1.]);
 	}
 }
-
-
 async function appli() {
-	console.log('Loading mobilenet..');
-	// Load the model.
-	net = await mobilenet.load();
-	// Model loaded
-	console.log('Sucessfully loaded model');
-	await setupWebcam();
-	// Wait for the webcam to be setup
+  console.log('Loading mobilenet..');
+  // Load the model.
+  net = await mobilenet.load();
+  // Model loaded
+  console.log('Sucessfully loaded model');
+  await setupWebcam()
+  // Wait for the webcam to be setup
+  while (true) {
 	//const result = await net.classify(webcamElement);
-	const feature = await net.infer(webcamElement);
+	const feature = await net.infer(webcamElement,embedding=false);
 	//console.log(feature);
-	//console.log(feature.buffer().values);
-	add_features(Array.from(feature.buffer().values));
+	//console.log(test.values);
+	const features = await feature.buffer()
+	// console.log(features.values)
+	add_features(Array.from(features.values));
 	//console.log("Prediction", result[0].className);
 	//console.log("Probability", result[0].probability);
-	if (show_class) {
+	if (show_class){
 		const prediction = model.predict(feature);
+		const buffer = await prediction.argMax(1).buffer()
 		const labels = ["Left", "Right", "Up", "Down"];
-		cl = prediction.argMax(1).buffer().values[0];
+		cl = buffer.values[0];
 		console.log(cl, labels[cl]);
-		move(labels[c1]);
+		move(labels[cl],5);              
 	}
 	// Wait for the next frame
 	await tf.nextFrame();
-
+  }
 }
-
 appli();

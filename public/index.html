@@ -5,8 +5,23 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>IA</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://unpkg.com/@tensorflow/tfjs"></script>
+    <!-- Load MobileNet -->
+    <script src="https://unpkg.com/@tensorflow-models/mobilenet"></script>
 </head>
 <body>
-    <script src="js/bundle.js"></script>
+    // Webcam
+    <video autoplay playsinline muted id="webcam" width="224" height="224"></video>
+
+    <!-- Buttons -->
+    <button id="left">Left</button>
+    <button id="right">Right</button>
+    <button id="up">Up</button>
+    <button id="down">Down</button>
+    <br>
+    <button id="train">train</button>
+    <button id="show">show</button>
+
+    <script src="public/js/main.js"></script>
 </body>
 </html>
