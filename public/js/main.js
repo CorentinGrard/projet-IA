@@ -1,20 +1,9 @@
 const PIXI = require('pixi.js');
 const Keyboard = require('pixi.js-keyboard');
 const intersects = require('intersects');
-var tf = require('@tensorflow/tfjs');
-var mobilenet = require('@tensorflow-models/mobilenet');
-
-
-
-// scriptTf=document.createElement('script');
-// scriptTf.src='https://unpkg.com/@tensorflow/tfjs';
-// document.getElementsByTagName('head')[0].appendChild(scriptTf);
-
-// scriptMobile=document.createElement('script');
-// scriptMobile.src='https://unpkg.com/@tensorflow-models/mobilenet';
-// document.getElementsByTagName('head')[0].appendChild(scriptMobile);
-
-
+const tf = require('@tensorflow/tfjs');
+const mobilenet = require('@tensorflow-models/mobilenet');
+const tfvis = require('@tensorflow/tfjs-vis')
 
 
 /*#########################################################################
@@ -91,7 +80,6 @@ let Application = PIXI.Application,
 	loader = PIXI.loader,
 	Graphics = PIXI.Graphics,
 	Text = PIXI.Text
-Polygon = PIXI.Polygon;
 
 
 /*###### Création de l'application PIXI ######*/
@@ -110,12 +98,7 @@ document.body.appendChild(app.view);
 /*###### Définition de toutes les variables ######*/
 let state, player, gameScene, winScene, enemies, startArea, endArea, winMessage;
 
-/*###### Chargement de la coufiguration ci-dessous ######*/
-loader
-	.load(setup);
-
-
-
+loader.load(setup);
 
 /*#########################################################################
 ###########################################################################
@@ -124,7 +107,6 @@ loader
 #########################################################################*/
 
 function setup() {
-
 
 	/*###### Création de la scene de jeu ######*/
 	gameScene = new Container();
@@ -236,7 +218,7 @@ function gameLoop(delta) {
 /*###### Fonction appellée à chaque tic d'horloge ######*/
 function play(delta) {
 	//console.log("x : "+player.x + "		y : "+player.y)
-	
+
 	player.vx = 0;
 	player.vy = 0;
 	const speed = 5 * delta;
@@ -310,9 +292,9 @@ function play(delta) {
 }
 
 // Fonctions de déplacement du joueur (purement vertical ou horizontal)
-function move(direction,speed) {
+function move(direction, speed) {
 	switch (direction) {
-		
+
 		case 'Left':
 			player.x -= speed;
 			break;
@@ -443,26 +425,13 @@ function collision(courantWall, player) {
 
 // Partie IA
 
-// var section = document.createElement("section");
-// section.innerHTML = `
-// <video autoplay playsinline muted id="webcam" width="224" height="224"></video>
-// <button id="left">Left</button>
-// <button id="right">Right</button>
-// <button id="up">Up</button>
-// <button id="down">Down</button>
-// <br>
-// <button onclick="train()" id=\"train\">train</button>
-// <button onclick="show()" id=\"train\">show</button>
-// `;
-
-// document.body.appendChild(section);
-
 const webcamElement = document.getElementById('webcam');
 // Select buttons
 const left = document.getElementById("left");
 const right = document.getElementById("right");
 const up = document.getElementById("up");
 const down = document.getElementById("down")
+const idle = document.getElementById("idle")
 var show_class = false;
 var features = [];
 var targets = [];
@@ -470,138 +439,130 @@ left.addEventListener("mousedown", () => { left.clicked = true; });
 right.addEventListener("mousedown", () => { right.clicked = true; });
 down.addEventListener("mousedown", () => { down.clicked = true; });
 up.addEventListener("mousedown", () => { up.clicked = true; });
+idle.addEventListener("mousedown", () => { idle.clicked = true; });
 left.addEventListener("mouseup", () => { left.clicked = false; });
 right.addEventListener("mouseup", () => { right.clicked = false; });
 down.addEventListener("mouseup", () => { down.clicked = false; });
 up.addEventListener("mouseup", () => { up.clicked = false; });
+idle.addEventListener("mouseup", () => { idle.clicked = false; });
 
-
-document.getElementById("train").onclick = function() {
-	train();
-}
-
-document.getElementById("show").onclick = function() {
-	show();
+document.getElementById("train").onclick = function () {
+    watchTraining();
 }
 
 /*
 	Create the model
 */
 // Input
-const input = tf.input({batchShape: [null, 1000]});
+const input = tf.input({ batchShape: [null, 1000] });
 // Output
-const output = tf.layers.dense({useBias: true, units: 4, activation: 'softmax'}).apply(input);
+const output = tf.layers.dense({ useBias: true, units: 5, activation: 'softmax' }).apply(input);
 // Create the model
-const model = tf.model({inputs: input, outputs: output});
+const model = tf.model({ inputs: input, outputs: output });
 // Optimize
 const optimizer = tf.train.adam(0.01);
 // Compile the model
-model.compile({optimizer: optimizer, loss: 'categoricalCrossentropy'});
-// Methode used to laod the webcam
-// async function setupWebcam() {
-//   return new Promise((resolve, reject) => {
-//     const navigatorAny = navigator;
-//     navigator.getUserMedia = navigator.getUserMedia ||
-//         navigatorAny.webkitGetUserMedia || navigatorAny.mozGetUserMedia ||
-//         navigatorAny.msGetUserMedia;
-//     if (navigator.getUserMedia) {
-//       navigator.getUserMedia({video: true},
-//         stream => {
-//           webcamElement.srcObject = stream;
-//           webcamElement.addEventListener('loadeddata',  () => resolve(), false);
-//         },
-//         error => reject());
-//     } else {
-//       reject();
-//     }
-//   });
-// }
+model.compile({ optimizer: optimizer, loss: 'categoricalCrossentropy' });
 
 async function setupWebcam() {
-  return new Promise((resolve, reject) => {
-	
-	navigator.mediaDevices.getUserMedia({video: true})
-	  .then(function(mediaStream) {
-		webcamElement.srcObject = mediaStream;
-		// webcamElement.onloadedmetadata = function(e) {
-		// 	webcamElement.play();
-		//   };
-		  webcamElement.addEventListener('loadeddata',  () => resolve(), false);
-	  });
-  });
+    return new Promise((resolve, reject) => {
+        const navigatorAny = navigator;
+        navigator.getUserMedia = navigator.getUserMedia ||
+            navigatorAny.webkitGetUserMedia || navigatorAny.mozGetUserMedia ||
+            navigatorAny.msGetUserMedia;
+        if (navigator.getUserMedia) {
+            navigator.getUserMedia({ video: true },
+                stream => {
+                    webcamElement.srcObject = stream;
+                    webcamElement.addEventListener('loadeddata', () => resolve(), false);
+                },
+                error => reject());
+        } else {
+            reject();
+        }
+    });
 }
 
-function show(){
-	show_class = true;
+function train(callback) {
+    // Train the model
+    console.log("Train");
+    const tf_features = tf.tensor2d(features, shape = [features.length, 1000])
+    const tf_targets = tf.tensor(targets);
+    model.fit(tf_features, tf_targets, {
+        batchSize: 32,
+        epochs: 50,
+        callbacks: callback
+	})
 }
-function train(){
-	// Train the model
-	console.log("Train");
-	const tf_features = tf.tensor2d(features, shape=[features.length, 1000])
-	const tf_targets = tf.tensor(targets);
-	model.fit(tf_features, tf_targets, {
-	  batchSize: 32,
-	  epochs: 75,
-	  callbacks: {
-		onBatchEnd: async (batch, logs) => {
-		  // Log the cost for every batch that is fed.
-		  console.log(logs.loss.toFixed(5));
-		  await tf.nextFrame();
-		}
-	  }
-	});
+function add_features(buffer) {
+    // Add features to one class if one button is pressed
+    if (left.clicked) {
+        console.log("gather left");
+        features.push(buffer);
+        targets.push([1., 0., 0., 0., 0.]);
+    }
+    else if (right.clicked) {
+        console.log("gather right");
+        features.push(buffer);
+        targets.push([0., 1., 0., 0., 0.]);
+    }
+    else if (up.clicked) {
+        console.log("gather up");
+        features.push(buffer);
+        targets.push([0., 0., 1., 0., 0.]);
+    }
+    else if (down.clicked) {
+        console.log("gather down");
+        features.push(buffer);
+        targets.push([0., 0., 0., 1., 0.]);
+    }
+    else if (idle.clicked) {
+        console.log("gather idle");
+        features.push(buffer);
+        targets.push([0., 0., 0., 0., 1.]);
+    }
 }
-function add_features(feature){
-	// Add features to one class if one button is pressed
-	if (left.clicked){
-		console.log("gather left");
-		features.push(feature);
-		targets.push([1., 0., 0., 0.]);
-	}
-	else if (right.clicked){
-		console.log("gather right");
-		features.push(feature);
-		targets.push([0., 1., 0., 0.]);
-	}
-	else if (up.clicked){
-		console.log("gather up");
-		features.push(feature);
-		targets.push([0., 0., 1., 0.]);
-	}
-	else if (down.clicked){
-		console.log("gather down");
-		features.push(feature);
-		targets.push([0., 0., 0., 1.]);
-	}
-}
+
 async function appli() {
-  console.log('Loading mobilenet..');
-  // Load the model.
-  net = await mobilenet.load();
-  // Model loaded
-  console.log('Sucessfully loaded model');
-  await setupWebcam()
-  // Wait for the webcam to be setup
-  while (true) {
-	//const result = await net.classify(webcamElement);
-	const feature = await net.infer(webcamElement,embedding=false);
-	//console.log(feature);
-	//console.log(test.values);
-	const features = await feature.buffer()
-	// console.log(features.values)
-	add_features(Array.from(features.values));
-	//console.log("Prediction", result[0].className);
-	//console.log("Probability", result[0].probability);
-	if (show_class){
-		const prediction = model.predict(feature);
-		const buffer = await prediction.argMax(1).buffer()
-		const labels = ["Left", "Right", "Up", "Down"];
-		cl = buffer.values[0];
-		console.log(cl, labels[cl]);
-		move(labels[cl],5);              
-	}
-	// Wait for the next frame
-	await tf.nextFrame();
-  }
+    console.log('Loading mobilenet..');
+    // Load the model.
+    net = await mobilenet.load();
+    // Model loaded
+    console.log('Sucessfully loaded model');
+    await setupWebcam()
+    // Wait for the webcam to be setup
+    while (true) {
+        const feature = await net.infer(webcamElement, embedding = false);
+        const buffer = await feature.buffer()
+        add_features(Array.from(buffer.values));
+        if (show_class) {
+            const prediction = model.predict(feature);
+            const buffer = await prediction.argMax(1).buffer()
+            const labels = ["Left", "Right", "Up", "Down", "Idle"];
+            cl = buffer.values[0];
+            console.log(labels[cl])
+            if (labels[cl] != "Idle") {
+                move(labels[cl], 5);
+            }
+        }
+        // Wait for the next frame
+        await tf.nextFrame();
+    }
 }
 appli();
+tfvis.visor()
+
+async function watchTraining() {
+    const metrics = ['loss', 'val_loss', 'acc', 'val_acc'];
+    const container = {
+        name: 'Results',
+        tab: 'Training',
+        styles: {
+            height: '1000px'
+        }
+    };
+    const callbacks = tfvis.show.fitCallbacks(container, metrics);
+    return train(callbacks).then( () => {
+		show_class = true;
+	});
+}

@@ -1,27 +1,29 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>IA</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="https://unpkg.com/@tensorflow/tfjs"></script>
-    <!-- Load MobileNet -->
-    <script src="https://unpkg.com/@tensorflow-models/mobilenet"></script>
+    <link rel="stylesheet" href="node_modules/uikit/dist/css/uikit.min.css">
 </head>
-<body>
-    // Webcam
-    <video autoplay playsinline muted id="webcam" width="224" height="224"></video>
 
-    <!-- Buttons -->
-    <button id="left">Left</button>
-    <button id="right">Right</button>
-    <button id="up">Up</button>
-    <button id="down">Down</button>
-    <br>
-    <button id="train">train</button>
-    <button id="show">show</button>
+<body>
+    <div style='text-align: center'>
+        <video autoplay playsinline muted id="webcam" width="500" height="500"></video>
+        <!-- Buttons -->
+        <br>
+        <button id="left" class="uk-button uk-button-primary">🡄</button>
+        <button id="right" class="uk-button uk-button-primary">🡆</button>
+        <button id="up" class="uk-button uk-button-primary">🡅</button>
+        <button id="down" class="uk-button uk-button-primary">🡇</button>
+        <button id="idle" class="uk-button uk-button-primary">😴</button>
+        <br>
+        <button id="train" class="uk-button uk-button-primary">train</button>
+    </div>
 
     <script src="public/js/main.js"></script>
 </body>
+
 </html>
