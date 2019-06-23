@@ -357,6 +357,7 @@ function enemieCreation(x, y, direction, speed, horizontalMovement, distance) {
 	enemies.push(enemie);
 }
 
+/*###### Fonction de création d'un mur ######*/
 function wallCreation(firstPointX, firstPointY, lastPointX, lastPointY, gameSide) {
 
 	let wall = new Graphics();
@@ -382,9 +383,10 @@ function wallCreation(firstPointX, firstPointY, lastPointX, lastPointY, gameSide
 
 }
 
-
+/*###### Fonction de gestion des collision entre le joueur et les murs ######*/
 function collision(courantWall, player) {
 
+	/*###### Vérification de la collision ######*/
 	let inter;
 	if (courantWall.verticality == true) {
 		inter = intersects.lineBox(courantWall.x, courantWall.y + 7, courantWall.sx, courantWall.sy - 7, player.x, player.y, player.width, player.height);
@@ -393,7 +395,7 @@ function collision(courantWall, player) {
 		inter = intersects.lineBox(courantWall.x + 7, courantWall.y, courantWall.sx - 7, courantWall.sy, player.x, player.y, player.width, player.height);
 	}
 
-
+	/*###### Si il y a collision, vérification du côté du plateau de jeu pour simuler "le blocage" contre le mur ######*/
 	if (inter) {
 
 		if (courantWall.verticality == true) {
@@ -422,18 +424,24 @@ function collision(courantWall, player) {
 
 
 
-// Partie IA
+/*#########################################################################
+###########################################################################
+############################ PARTIE IA ####################################
+###########################################################################
+#########################################################################*/
 
+/*###### Récupération de l'élément webcam pour l'entrainement ######*/
 const webcamElement = document.getElementById('webcam');
-// Select buttons
+
+
+/*###### Récupération des boutons pour l'association des images de webcam aux entrées du même nom ######*/
 const left = document.getElementById("left");
 const right = document.getElementById("right");
 const up = document.getElementById("up");
 const down = document.getElementById("down");
 const idle = document.getElementById("idle");
-var show_class = false;
-var features = [];
-var targets = [];
+
+/*###### Déclaration des évenements des boutons ci-dessus ######*/
 left.addEventListener("mousedown", () => { left.clicked = true; });
 right.addEventListener("mousedown", () => { right.clicked = true; });
 down.addEventListener("mousedown", () => { down.clicked = true; });
@@ -445,14 +453,24 @@ down.addEventListener("mouseup", () => { down.clicked = false; });
 up.addEventListener("mouseup", () => { up.clicked = false; });
 idle.addEventListener("mouseup", () => { idle.clicked = false; });
 
+/*###### Booléen permettant de savoir quand l'entrainement du modèle est fini ######*/
+var trainingOver = false;
+
+/*###### Création des datasets ######*/
+/*###### Stockage des informations qui permettent de représenter l'image enregistrée par la webcam à un instant T ######*/
+var features = [];
+
+/*###### Association des classes du modèle à l'image (voir fonction add_features) ######*/
+var targets = [];
+
+/*###### Déclaration de l'événement "train" pour pouvoir démarrer l'entrainement de notre modèle ######*/
 document.getElementById("train").onclick = function () {
     watchTraining();
 }
 
-/*
-	Create the model
-*/
-// Input
+/*###### Création du modèle ######*/
+
+/*###### Création de l'entrée du modèle ######*/
 const input = tf.input({ batchShape: [null, 1000] });
 // Output
 const output = tf.layers.dense({ useBias: true, units: 5, activation: 'softmax' }).apply(input);
@@ -463,6 +481,8 @@ const optimizer = tf.train.adam(0.005);
 // Compile the model
 model.compile({ optimizer: optimizer, loss: 'categoricalCrossentropy' });
 
+
+/*###### Fonction de déclaration de la webcam et se récupération dans la variable "webcamElement" ######*/
 async function setupWebcam() {
     return new Promise((resolve, reject) => {
         const navigatorAny = navigator;
@@ -492,18 +512,25 @@ function train(callback) {
         epochs: 50,
         callbacks: callback
 	}).then(function() {
-		show_class = true;
+		trainingOver = true;
 	});
 }
 
+/*###### Fonction d'ajout de nos vecteurs à nos deux tableaux de datasets ######*/
 function add_features(buffer) {
-    // Add features to one class if one button is pressed
+	
+	/*###### Condition sur la classe d'attribution de nos vecteur (droit, gauche, haut, bas, centre pour nous) ######*/
     if (left.clicked) {
 		//console.log("gather left");
 		document.getElementById("courantConsole").innerHTML = "Apprentissage gauche";
-        features.push(buffer);
+		
+		/*###### Ajout du vecteur représentant de l'image courante dans le tableau prévu à cet effet ######*/
+		features.push(buffer);
+
+		/*###### Ajout de la classe représentante de l'image courante dans le tableau prévu à cet effet ######*/
         targets.push([1., 0., 0., 0., 0.]);
-    }
+	}
+	/*###### Même principe que la condition précédente ######*/
     else if (right.clicked) {
 		//console.log("gather right");
 		document.getElementById("courantConsole").innerHTML = "Apprentissage droit";
@@ -530,36 +557,67 @@ function add_features(buffer) {
     }
 }
 
+/*###### Fonction asynchrone qui permet de faire "tourner le modèle proposé par MobileNet" ######*/
 async function appli() {
-    console.log('Loading mobilenet..');
-    // Load the model.
-    net = await mobilenet.load();
-    // Model loaded
+    
+	/*###### Chargement du modèle à convolution de MobileNet que nous utilisons dans cet exemple (il en existe d'autres) ######*/
+	console.log('Loading mobilenet..');
+	net = await mobilenet.load(); //
     document.getElementById("courantConsole").innerHTML = "Chargement du modèle réussi";
-    await setupWebcam()
-    // Wait for the webcam to be setup
-    while (true) {
-        const feature = await net.infer(webcamElement, embedding = false);
-        const buffer = await feature.buffer()
+	
+	/*###### Chargement de la caméra (fonction avec Promesse donc bloquante tant que la webcam n'est pas chargée) ######*/
+	await setupWebcam();
+   
+	/*###### Boucle infini pour la récupération des images de la webcam à chaque instant ######*/
+	while (true) {
+
+		/*###### Acquisition des données avant l'entrainement du modèle ######*/
+		
+		/*###### Récupération d'un objet Tensor représentatif de l'image ######*/
+		const feature = await net.infer(webcamElement);
+		/*###### Transformation en vecteur TensorflowJS ######*/
+		const buffer = await feature.buffer();
+		/*###### Ajout dans notre Dataset ######*/
         add_features(Array.from(buffer.values));
-        if (show_class) {
+		
+		/*###### Condition déclanchée en fin d'entrainement ######*/
+		if (trainingOver) {
+
+			/*###### Prédiction du modèle en fonction de l'image courante ######*/
             const prediction = model.predict(feature);
-            const buffer = await prediction.argMax(1).buffer()
+			
+			/*###### Récupération de l'information concernant la classe de l'image à partir du vecteur représentatif de l'image ######*/
+			/*###### Ce vecteur contient la classe de l'image (voir Fonction add_features) ######*/
+			const buffer = await prediction.argMax(1).buffer()
+
+			/*###### Tableau de correspondance entre les classes de notre modèle et les valeurs textuelles correspondantes  ######*/
             const labels = ["Left", "Right", "Up", "Down", "Idle"];
-            cl = buffer.values[0];
+			
+			/*###### Récupération de l'index de la classe pour le vecteur image courant ######*/
+			cl = buffer.values[0];
+
+			/*###### Affichage textuelle de la prédiction ######*/
 			console.log(labels[cl]);
 			document.getElementById("courantConsole").innerHTML = labels[cl];
-            if (labels[cl] != "Idle") {
-                move(labels[cl], 5);
+		   
+			/*###### En fonction de la prédiction, appel ou pas à la fonction de mouvement de notre joueur ######*/
+			if (labels[cl] != "Idle") {
+                move(labels[cl], 5); //Vitesse arbitraire pour l'exemple (voir Fonction move)
             }
         }
-        // Wait for the next frame
+		
+		/*###### En attente de la prochaine image envoyé par la webcam pour refaire un tour de boucle ######*/
         await tf.nextFrame();
     }
 }
+
+/*###### Lancement de notre modèle TensorFlow ######*/
 appli();
+
+/*###### Appel à la librairie de visualisation graphique de TensorFlowJS ######*/
 tfvis.visor();
 
+/*###### Fonction permettant de lancer l'entrainement du modèle et d'afficher son taux d'erreur à chaque tic d'apprentissage ######*/
 async function watchTraining() {
     const metrics = ['loss', 'val_loss', 'acc', 'val_acc'];
     const container = {
