@@ -429,8 +429,8 @@ const webcamElement = document.getElementById('webcam');
 const left = document.getElementById("left");
 const right = document.getElementById("right");
 const up = document.getElementById("up");
-const down = document.getElementById("down")
-const idle = document.getElementById("idle")
+const down = document.getElementById("down");
+const idle = document.getElementById("idle");
 var show_class = false;
 var features = [];
 var targets = [];
@@ -459,7 +459,7 @@ const output = tf.layers.dense({ useBias: true, units: 5, activation: 'softmax' 
 // Create the model
 const model = tf.model({ inputs: input, outputs: output });
 // Optimize
-const optimizer = tf.train.adam(0.01);
+const optimizer = tf.train.adam(0.005);
 // Compile the model
 model.compile({ optimizer: optimizer, loss: 'categoricalCrossentropy' });
 
@@ -483,7 +483,7 @@ async function setupWebcam() {
 }
 
 function train(callback) {
-    // Train the model
+	// Train the model
     console.log("Train");
     const tf_features = tf.tensor2d(features, shape = [features.length, 1000])
     const tf_targets = tf.tensor(targets);
@@ -491,8 +491,11 @@ function train(callback) {
         batchSize: 32,
         epochs: 50,
         callbacks: callback
+	}).then(function() {
+		show_class = true;
 	});
 }
+
 function add_features(buffer) {
     // Add features to one class if one button is pressed
     if (left.clicked) {
@@ -568,8 +571,7 @@ async function watchTraining() {
     };
 	const callbacks = tfvis.show.fitCallbacks(container, metrics);
 
+	train(callbacks);
 
-    return train(callbacks).then( () => {
-		show_class = true;
-	});
+	
 }
