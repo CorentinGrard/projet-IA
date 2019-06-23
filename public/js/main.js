@@ -3,7 +3,7 @@ const Keyboard = require('pixi.js-keyboard');
 const intersects = require('intersects');
 const tf = require('@tensorflow/tfjs');
 const mobilenet = require('@tensorflow-models/mobilenet');
-const tfvis = require('@tensorflow/tfjs-vis')
+const tfvis = require('@tensorflow/tfjs-vis');
 
 
 /*#########################################################################
@@ -91,9 +91,8 @@ let app = new Application({
 	resolution: 1
 });
 
-
 /*###### Ajout du canvas PIXI dans le HTML ######*/
-document.body.appendChild(app.view);
+document.getElementById("section2").appendChild(app.view);
 
 /*###### Définition de toutes les variables ######*/
 let state, player, gameScene, winScene, enemies, startArea, endArea, winMessage;
@@ -492,32 +491,37 @@ function train(callback) {
         batchSize: 32,
         epochs: 50,
         callbacks: callback
-	})
+	});
 }
 function add_features(buffer) {
     // Add features to one class if one button is pressed
     if (left.clicked) {
-        console.log("gather left");
+		//console.log("gather left");
+		document.getElementById("courantConsole").innerHTML = "Apprentissage gauche";
         features.push(buffer);
         targets.push([1., 0., 0., 0., 0.]);
     }
     else if (right.clicked) {
-        console.log("gather right");
+		//console.log("gather right");
+		document.getElementById("courantConsole").innerHTML = "Apprentissage droit";
         features.push(buffer);
         targets.push([0., 1., 0., 0., 0.]);
     }
     else if (up.clicked) {
-        console.log("gather up");
+		//console.log("gather up");
+		document.getElementById("courantConsole").innerHTML = "Apprentissage haut";
         features.push(buffer);
         targets.push([0., 0., 1., 0., 0.]);
     }
     else if (down.clicked) {
-        console.log("gather down");
+		//console.log("gather down");
+		document.getElementById("courantConsole").innerHTML = "Apprentissage bas";
         features.push(buffer);
         targets.push([0., 0., 0., 1., 0.]);
     }
     else if (idle.clicked) {
-        console.log("gather idle");
+		//console.log("gather idle");
+		document.getElementById("courantConsole").innerHTML = "Apprentissage Immobile";
         features.push(buffer);
         targets.push([0., 0., 0., 0., 1.]);
     }
@@ -528,7 +532,7 @@ async function appli() {
     // Load the model.
     net = await mobilenet.load();
     // Model loaded
-    console.log('Sucessfully loaded model');
+    document.getElementById("courantConsole").innerHTML = "Chargement du modèle réussi";
     await setupWebcam()
     // Wait for the webcam to be setup
     while (true) {
@@ -540,7 +544,8 @@ async function appli() {
             const buffer = await prediction.argMax(1).buffer()
             const labels = ["Left", "Right", "Up", "Down", "Idle"];
             cl = buffer.values[0];
-            console.log(labels[cl])
+			console.log(labels[cl]);
+			document.getElementById("courantConsole").innerHTML = labels[cl];
             if (labels[cl] != "Idle") {
                 move(labels[cl], 5);
             }
@@ -550,7 +555,7 @@ async function appli() {
     }
 }
 appli();
-tfvis.visor()
+tfvis.visor();
 
 async function watchTraining() {
     const metrics = ['loss', 'val_loss', 'acc', 'val_acc'];
@@ -561,7 +566,9 @@ async function watchTraining() {
             height: '1000px'
         }
     };
-    const callbacks = tfvis.show.fitCallbacks(container, metrics);
+	const callbacks = tfvis.show.fitCallbacks(container, metrics);
+
+
     return train(callbacks).then( () => {
 		show_class = true;
 	});
