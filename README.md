@@ -12,9 +12,6 @@
   <a href="https://github.com/CorentinGrard/projet-IA/blob/master/LICENSE">
     <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg" target="_blank" />
   </a>
-  <a href="https://twitter.com/evilox34">
-    <img alt="Twitter: evilox34" src="https://img.shields.io/twitter/follow/evilox34.svg?style=social" target="_blank" />
-  </a>
 </p>
 
 > This project is a demonstration to show how an AI can learn from your webcam and play a game
