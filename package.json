@@ -32,5 +32,9 @@
   "devDependencies": {
     "beefy": "^2.1.8",
     "watchify": "^3.11.1"
+  },
+  "engines": {
+    "npm": ">=6.9.0",
+    "node": ">=9.3.0"
   }
 }

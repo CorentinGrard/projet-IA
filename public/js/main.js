@@ -95,7 +95,7 @@ let app = new Application({
 document.getElementById("section2").appendChild(app.view);
 
 /*###### Définition de toutes les variables ######*/
-let state, player, gameScene, winScene, enemies, startArea, endArea, winMessage;
+let state, player, gameScene, winScene, enemies, startArea, endArea, winMessage, tabWall;
 
 loader.load(setup);
 
@@ -124,7 +124,7 @@ function setup() {
 	/*###### Création du plateau de jeu et ajout à la scene de jeu ######*/
 
 	/*###### Différenciation de la forme en coordonnées et du dessin de la map ######*/
-	gameBoardDraw = new Graphics();
+	const gameBoardDraw = new Graphics();
 
 	gameBoardDraw.beginFill(0xC0C0C0);
 	gameBoardDraw.drawPolygon(tabPolygon);
@@ -226,8 +226,7 @@ function play(delta) {
 	if (Keyboard.isKeyDown('ArrowLeft', 'KeyQ')) {
 		if (Keyboard.isKeyDown('ArrowUp', 'KeyZ') || Keyboard.isKeyDown('ArrowDown', 'KeyS')) {
 			player.x -= speed / Math.sqrt(2);
-		}
-		else {
+		} else {
 			move("Left", speed);
 		}
 	}
@@ -371,8 +370,7 @@ function wallCreation(firstPointX, firstPointY, lastPointX, lastPointY, gameSide
 
 	if (wall.x == wall.sx) {
 		wall.verticality = true;
-	}
-	else {
+	} else {
 		wall.verticality = false;
 	}
 
@@ -390,8 +388,7 @@ function collision(courantWall, player) {
 	let inter;
 	if (courantWall.verticality == true) {
 		inter = intersects.lineBox(courantWall.x, courantWall.y + 7, courantWall.sx, courantWall.sy - 7, player.x, player.y, player.width, player.height);
-	}
-	else if (courantWall.verticality == false) {
+	} else if (courantWall.verticality == false) {
 		inter = intersects.lineBox(courantWall.x + 7, courantWall.y, courantWall.sx - 7, courantWall.sy, player.x, player.y, player.width, player.height);
 	}
 
@@ -401,16 +398,13 @@ function collision(courantWall, player) {
 		if (courantWall.verticality == true) {
 			if (courantWall.gameSide == "left") {
 				player.x = courantWall.x - player.width - 1;
-			}
-			else if (courantWall.gameSide == "right") {
+			} else if (courantWall.gameSide == "right") {
 				player.x = courantWall.x;
 			}
-		}
-		else {
+		} else {
 			if (courantWall.gameSide == "top") {
 				player.y = courantWall.y - player.height;
-			}
-			else if (courantWall.gameSide == "bottom") {
+			} else if (courantWall.gameSide == "bottom") {
 				player.y = courantWall.y + 1;
 			}
 		}
@@ -442,16 +436,36 @@ const down = document.getElementById("down");
 const idle = document.getElementById("idle");
 
 /*###### Déclaration des évenements des boutons ci-dessus ######*/
-left.addEventListener("mousedown", () => { left.clicked = true; });
-right.addEventListener("mousedown", () => { right.clicked = true; });
-down.addEventListener("mousedown", () => { down.clicked = true; });
-up.addEventListener("mousedown", () => { up.clicked = true; });
-idle.addEventListener("mousedown", () => { idle.clicked = true; });
-left.addEventListener("mouseup", () => { left.clicked = false; });
-right.addEventListener("mouseup", () => { right.clicked = false; });
-down.addEventListener("mouseup", () => { down.clicked = false; });
-up.addEventListener("mouseup", () => { up.clicked = false; });
-idle.addEventListener("mouseup", () => { idle.clicked = false; });
+left.addEventListener("mousedown", () => {
+	left.clicked = true;
+});
+right.addEventListener("mousedown", () => {
+	right.clicked = true;
+});
+down.addEventListener("mousedown", () => {
+	down.clicked = true;
+});
+up.addEventListener("mousedown", () => {
+	up.clicked = true;
+});
+idle.addEventListener("mousedown", () => {
+	idle.clicked = true;
+});
+left.addEventListener("mouseup", () => {
+	left.clicked = false;
+});
+right.addEventListener("mouseup", () => {
+	right.clicked = false;
+});
+down.addEventListener("mouseup", () => {
+	down.clicked = false;
+});
+up.addEventListener("mouseup", () => {
+	up.clicked = false;
+});
+idle.addEventListener("mouseup", () => {
+	idle.clicked = false;
+});
 
 /*###### Booléen permettant de savoir quand l'entrainement du modèle est fini ######*/
 var trainingOver = false;
@@ -465,150 +479,161 @@ var targets = [];
 
 /*###### Déclaration de l'événement "train" pour pouvoir démarrer l'entrainement de notre modèle ######*/
 document.getElementById("train").onclick = function () {
-    watchTraining();
+	watchTraining();
 }
 
 /*###### Création du modèle ######*/
 
 /*###### Création de l'entrée du modèle ######*/
-const input = tf.input({ batchShape: [null, 1000] });
+const input = tf.input({
+	batchShape: [null, 1000]
+});
 // Output
-const output = tf.layers.dense({ useBias: true, units: 5, activation: 'softmax' }).apply(input);
+const output = tf.layers.dense({
+	useBias: true,
+	units: 5,
+	activation: 'softmax'
+}).apply(input);
 // Create the model
-const model = tf.model({ inputs: input, outputs: output });
+const model = tf.model({
+	inputs: input,
+	outputs: output
+});
 // Optimize
 const optimizer = tf.train.adam(0.005);
 // Compile the model
-model.compile({ optimizer: optimizer, loss: 'categoricalCrossentropy' });
+model.compile({
+	optimizer: optimizer,
+	loss: 'categoricalCrossentropy'
+});
 
 
 /*###### Fonction de déclaration de la webcam et se récupération dans la variable "webcamElement" ######*/
 async function setupWebcam() {
-    return new Promise((resolve, reject) => {
-        const navigatorAny = navigator;
-        navigator.getUserMedia = navigator.getUserMedia ||
-            navigatorAny.webkitGetUserMedia || navigatorAny.mozGetUserMedia ||
-            navigatorAny.msGetUserMedia;
-        if (navigator.getUserMedia) {
-            navigator.getUserMedia({ video: true },
-                stream => {
-                    webcamElement.srcObject = stream;
-                    webcamElement.addEventListener('loadeddata', () => resolve(), false);
-                },
-                error => reject());
-        } else {
-            reject();
-        }
-    });
+	return new Promise((resolve, reject) => {
+		const navigatorAny = navigator;
+		navigator.getUserMedia = navigator.getUserMedia ||
+			navigatorAny.webkitGetUserMedia || navigatorAny.mozGetUserMedia ||
+			navigatorAny.msGetUserMedia;
+		if (navigator.getUserMedia) {
+			navigator.getUserMedia({
+					video: true
+				},
+				stream => {
+					webcamElement.srcObject = stream;
+					webcamElement.addEventListener('loadeddata', () => resolve(), false);
+				},
+				error => reject());
+		} else {
+			reject();
+		}
+	});
 }
 
 function train(callback) {
 	// Train the model
-    console.log("Train");
-    const tf_features = tf.tensor2d(features, shape = [features.length, 1000])
-    const tf_targets = tf.tensor(targets);
-    model.fit(tf_features, tf_targets, {
-        batchSize: 32,
-        epochs: 50,
-        callbacks: callback
-	}).then(function() {
+	console.log("Train");
+	const tf_features = tf.tensor2d(features, [features.length, 1000])
+	const tf_targets = tf.tensor(targets);
+	model.fit(tf_features, tf_targets, {
+		batchSize: 32,
+		epochs: 50,
+		callbacks: callback
+	}).then(function () {
 		trainingOver = true;
 	});
 }
 
 /*###### Fonction d'ajout de nos vecteurs à nos deux tableaux de datasets ######*/
 function add_features(buffer) {
-	
+
 	/*###### Condition sur la classe d'attribution de nos vecteur (droit, gauche, haut, bas, centre pour nous) ######*/
-    if (left.clicked) {
+	if (left.clicked) {
 		//console.log("gather left");
 		document.getElementById("courantConsole").innerHTML = "Apprentissage gauche";
-		
+
 		/*###### Ajout du vecteur représentant de l'image courante dans le tableau prévu à cet effet ######*/
 		features.push(buffer);
 
 		/*###### Ajout de la classe représentante de l'image courante dans le tableau prévu à cet effet ######*/
-        targets.push([1., 0., 0., 0., 0.]);
+		targets.push([1., 0., 0., 0., 0.]);
 	}
 	/*###### Même principe que la condition précédente ######*/
-    else if (right.clicked) {
+	else if (right.clicked) {
 		//console.log("gather right");
 		document.getElementById("courantConsole").innerHTML = "Apprentissage droit";
-        features.push(buffer);
-        targets.push([0., 1., 0., 0., 0.]);
-    }
-    else if (up.clicked) {
+		features.push(buffer);
+		targets.push([0., 1., 0., 0., 0.]);
+	} else if (up.clicked) {
 		//console.log("gather up");
 		document.getElementById("courantConsole").innerHTML = "Apprentissage haut";
-        features.push(buffer);
-        targets.push([0., 0., 1., 0., 0.]);
-    }
-    else if (down.clicked) {
+		features.push(buffer);
+		targets.push([0., 0., 1., 0., 0.]);
+	} else if (down.clicked) {
 		//console.log("gather down");
 		document.getElementById("courantConsole").innerHTML = "Apprentissage bas";
-        features.push(buffer);
-        targets.push([0., 0., 0., 1., 0.]);
-    }
-    else if (idle.clicked) {
+		features.push(buffer);
+		targets.push([0., 0., 0., 1., 0.]);
+	} else if (idle.clicked) {
 		//console.log("gather idle");
 		document.getElementById("courantConsole").innerHTML = "Apprentissage Immobile";
-        features.push(buffer);
-        targets.push([0., 0., 0., 0., 1.]);
-    }
+		features.push(buffer);
+		targets.push([0., 0., 0., 0., 1.]);
+	}
 }
 
 /*###### Fonction asynchrone qui permet de faire "tourner le modèle proposé par MobileNet" ######*/
 async function appli() {
-    
+
 	/*###### Chargement du modèle à convolution de MobileNet que nous utilisons dans cet exemple (il en existe d'autres) ######*/
 	console.log('Loading mobilenet..');
-	net = await mobilenet.load(); //
-    document.getElementById("courantConsole").innerHTML = "Chargement du modèle réussi";
-	
+	const net = await mobilenet.load();
+	document.getElementById("courantConsole").innerHTML = "Chargement du modèle réussi";
+
 	/*###### Chargement de la caméra (fonction avec Promesse donc bloquante tant que la webcam n'est pas chargée) ######*/
 	await setupWebcam();
-   
+
 	/*###### Boucle infini pour la récupération des images de la webcam à chaque instant ######*/
 	while (true) {
 
 		/*###### Acquisition des données avant l'entrainement du modèle ######*/
-		
+
 		/*###### Récupération d'un objet Tensor représentatif de l'image ######*/
 		const feature = await net.infer(webcamElement);
 		/*###### Transformation en vecteur TensorflowJS ######*/
 		const buffer = await feature.buffer();
 		/*###### Ajout dans notre Dataset ######*/
-        add_features(Array.from(buffer.values));
-		
+		add_features(Array.from(buffer.values));
+
 		/*###### Condition déclanchée en fin d'entrainement ######*/
 		if (trainingOver) {
 
 			/*###### Prédiction du modèle en fonction de l'image courante ######*/
-            const prediction = model.predict(feature);
-			
+			const prediction = model.predict(feature);
+
 			/*###### Récupération de l'information concernant la classe de l'image à partir du vecteur représentatif de l'image ######*/
 			/*###### Ce vecteur contient la classe de l'image (voir Fonction add_features) ######*/
 			const buffer = await prediction.argMax(1).buffer()
 
 			/*###### Tableau de correspondance entre les classes de notre modèle et les valeurs textuelles correspondantes  ######*/
-            const labels = ["Left", "Right", "Up", "Down", "Idle"];
-			
+			const labels = ["Left", "Right", "Up", "Down", "Idle"];
+
 			/*###### Récupération de l'index de la classe pour le vecteur image courant ######*/
-			cl = buffer.values[0];
+			const cl = buffer.values[0];
 
 			/*###### Affichage textuelle de la prédiction ######*/
 			console.log(labels[cl]);
 			document.getElementById("courantConsole").innerHTML = labels[cl];
-		   
+
 			/*###### En fonction de la prédiction, appel ou pas à la fonction de mouvement de notre joueur ######*/
 			if (labels[cl] != "Idle") {
-                move(labels[cl], 5); //Vitesse arbitraire pour l'exemple (voir Fonction move)
-            }
-        }
-		
+				move(labels[cl], 5); //Vitesse arbitraire pour l'exemple (voir Fonction move)
+			}
+		}
+
 		/*###### En attente de la prochaine image envoyé par la webcam pour refaire un tour de boucle ######*/
-        await tf.nextFrame();
-    }
+		await tf.nextFrame();
+	}
 }
 
 /*###### Lancement de notre modèle TensorFlow ######*/
@@ -619,17 +644,17 @@ tfvis.visor();
 
 /*###### Fonction permettant de lancer l'entrainement du modèle et d'afficher son taux d'erreur à chaque tic d'apprentissage ######*/
 async function watchTraining() {
-    const metrics = ['loss', 'val_loss', 'acc', 'val_acc'];
-    const container = {
-        name: 'Results',
-        tab: 'Training',
-        styles: {
-            height: '1000px'
-        }
-    };
+	const metrics = ['loss', 'val_loss', 'acc', 'val_acc'];
+	const container = {
+		name: 'Results',
+		tab: 'Training',
+		styles: {
+			height: '1000px'
+		}
+	};
 	const callbacks = tfvis.show.fitCallbacks(container, metrics);
 
 	train(callbacks);
 
-	
+
 }
