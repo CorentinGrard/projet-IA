@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "beefy public/js/main.js --live --open --index public/index.html",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "http-server"
+    "start": "beefy public/js/main.js --live --open --index public/index.html"
   },
   "repository": {
     "type": "git",
@@ -23,7 +23,6 @@
     "@tensorflow/tfjs": "^1.2.1",
     "@tensorflow/tfjs-vis": "^1.1.0",
     "browserify": "^16.2.3",
-    "http-server": "^0.11.1",
     "intersects": "^2.5.2",
     "pixi.js": "^4.8.7",
     "pixi.js-keyboard": "^1.0.9",

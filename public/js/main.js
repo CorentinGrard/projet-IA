@@ -216,8 +216,6 @@ function gameLoop(delta) {
 
 /*###### Fonction appellée à chaque tic d'horloge ######*/
 function play(delta) {
-	//console.log("x : "+player.x + "		y : "+player.y)
-
 	player.vx = 0;
 	player.vy = 0;
 	const speed = 5 * delta;
@@ -500,7 +498,7 @@ const model = tf.model({
 	outputs: output
 });
 // Optimize
-const optimizer = tf.train.adam(0.005);
+const optimizer = tf.train.adam(0.001);
 // Compile the model
 model.compile({
 	optimizer: optimizer,
@@ -532,7 +530,7 @@ async function setupWebcam() {
 
 function train(callback) {
 	// Train the model
-	console.log("Train");
+	console.log("Begin training");
 	const tf_features = tf.tensor2d(features, [features.length, 1000])
 	const tf_targets = tf.tensor(targets);
 	model.fit(tf_features, tf_targets, {
@@ -549,7 +547,7 @@ function add_features(buffer) {
 
 	/*###### Condition sur la classe d'attribution de nos vecteur (droit, gauche, haut, bas, centre pour nous) ######*/
 	if (left.clicked) {
-		//console.log("gather left");
+		console.log("gather left");
 		document.getElementById("courantConsole").innerHTML = "Apprentissage gauche";
 
 		/*###### Ajout du vecteur représentant de l'image courante dans le tableau prévu à cet effet ######*/
@@ -560,22 +558,22 @@ function add_features(buffer) {
 	}
 	/*###### Même principe que la condition précédente ######*/
 	else if (right.clicked) {
-		//console.log("gather right");
+		console.log("gather right");
 		document.getElementById("courantConsole").innerHTML = "Apprentissage droit";
 		features.push(buffer);
 		targets.push([0., 1., 0., 0., 0.]);
 	} else if (up.clicked) {
-		//console.log("gather up");
+		console.log("gather up");
 		document.getElementById("courantConsole").innerHTML = "Apprentissage haut";
 		features.push(buffer);
 		targets.push([0., 0., 1., 0., 0.]);
 	} else if (down.clicked) {
-		//console.log("gather down");
+		console.log("gather down");
 		document.getElementById("courantConsole").innerHTML = "Apprentissage bas";
 		features.push(buffer);
 		targets.push([0., 0., 0., 1., 0.]);
 	} else if (idle.clicked) {
-		//console.log("gather idle");
+		console.log("gather idle");
 		document.getElementById("courantConsole").innerHTML = "Apprentissage Immobile";
 		features.push(buffer);
 		targets.push([0., 0., 0., 0., 1.]);
