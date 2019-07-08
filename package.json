@@ -4,9 +4,8 @@
   "description": "test test",
   "main": "index.html",
   "scripts": {
-    "dev": "beefy public/js/main.js --live --open --index public/index.html",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "beefy public/js/main.js --live --open --index public/index.html"
+    "dev": "parcel src/index.html",
+    "build": "parcel build src/index.html"
   },
   "repository": {
     "type": "git",
@@ -19,21 +18,22 @@
   },
   "homepage": "https://github.com/CorentinGrard/projet-IA#readme",
   "dependencies": {
+    "@babel/runtime-corejs2": "^7.5.1",
     "@tensorflow-models/mobilenet": "^1.0.1",
     "@tensorflow/tfjs": "^1.2.1",
     "@tensorflow/tfjs-vis": "^1.1.0",
-    "browserify": "^16.2.3",
     "intersects": "^2.5.2",
     "pixi.js": "^4.8.7",
     "pixi.js-keyboard": "^1.0.9",
     "uikit": "^3.1.6"
   },
-  "devDependencies": {
-    "beefy": "^2.1.8",
-    "watchify": "^3.11.1"
-  },
   "engines": {
     "npm": ">=6.9.0",
     "node": ">=9.3.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.5.0",
+    "@babel/plugin-transform-runtime": "^7.5.0",
+    "cssnano": "^4.1.10"
   }
 }

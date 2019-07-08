@@ -1,0 +1,1 @@
+{"version":3,"sources":["main.css"],"names":[],"mappings":"AAIA,oBAHI,oBAMJ,CAHA,UAEI,iBACJ,CAEA,gBACI,cACJ","file":"main.aedbc862.css","sourceRoot":"../src","sourcesContent":["#section1 {\n    display: inline-block;\n}\n\n#section2{\n    display: inline-block;\n    position: absolute;\n}\n\n#courantConsole {\n    display: inline;\n}"]}
